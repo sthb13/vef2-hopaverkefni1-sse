@@ -1,0 +1,45 @@
+{
+  "name": "vef2-hopaverkefni1-sse",
+  "version": "1.0.0",
+  "description": "Heimasíða fyrir veitingastað",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sthb13/vef2-hopaverkefni1-sse.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sthb13/vef2-hopaverkefni1-sse/issues"
+  },
+  "homepage": "https://github.com/sthb13/vef2-hopaverkefni1-sse#readme",
+  "dependencies": {
+    "brcypt": "^1.0.1",
+    "dotenv": "^16.0.0",
+    "dotenv-cli": "^5.0.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.3",
+    "express-session": "^1.17.2",
+    "express-validator": "^6.14.0",
+    "passport": "^0.5.2",
+    "passport-local": "^1.0.0",
+    "pg": "^8.7.3",
+    "xss": "^1.0.10"
+  },
+  "devDependencies": {
+    "concurrently": "^7.0.0",
+    "eslint": "^8.8.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.4",
+    "jest": "^27.4.7",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.5.1",
+    "stylelint": "^14.3.0",
+    "stylelint-config-sass-guidelines": "^9.0.1",
+    "stylelint-config-standard": "^24.0.0"
+  }
+}
