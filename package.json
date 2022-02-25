@@ -1,7 +1,7 @@
 {
   "name": "vef2-hopaverkefni1-sse",
   "version": "1.0.0",
-  "description": "[Kynning í fyrirlestri](https://youtu.be/W0k01_KRE4I).",
+  "description": "Heimasíða fyrir veitingastað",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon ./src/app.js",
@@ -16,7 +16,6 @@
     "type": "git",
     "url": "git+https://github.com/sthb13/vef2-hopaverkefni1-sse.git"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
