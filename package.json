@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon ./src/app.js",
-    "start": "node ./src/app.js",
-    "setup": "dotenv -e .env node ./src/setup.js",
+    "start": "dotenv -e .env node ./src/app.js",
+    "build": "dotenv -e .env node ./src/setup.js",
     "lint": "eslint ./src --fix",
     "test": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' dotenv -e .env.test -- jest ./*.test.js",
     "test-watch": "node --experimental-vm-modules node_modules/.bin/jest --watch",
