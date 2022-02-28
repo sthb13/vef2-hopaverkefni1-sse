@@ -52,3 +52,9 @@ CREATE TABLE orderStatus (
 	lastStChange TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT orderID FOREIGN KEY(orderID) REFERENCES orders(id)
 );
+
+CREATE TABLE users (
+	id serial primary key,
+	username character varying(64) NOT NULL,
+	password character varying(256) NOT NULL
+);
