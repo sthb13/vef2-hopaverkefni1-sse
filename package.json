@@ -22,7 +22,6 @@
     "url": "https://github.com/sthb13/vef2-hopaverkefni1-sse/issues"
   },
   "homepage": "https://github.com/sthb13/vef2-hopaverkefni1-sse#readme",
-
   "dependencies": {
     "bcrypt": "^5.0.1",
     "dotenv": "^16.0.0",
@@ -34,6 +33,7 @@
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
     "pg": "^8.7.3",
+    "winston": "^3.6.0",
     "xss": "^1.0.10"
   },
   "devDependencies": {
@@ -45,5 +45,4 @@
     "nodemon": "^2.0.15",
     "prettier": "^2.5.1"
   }
-
 }
