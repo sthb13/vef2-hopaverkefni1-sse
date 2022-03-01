@@ -1,7 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 
-import { body } from 'express-validator';
 import { jwtOptions, tokenOptions, requireAuthentication } from './passport.js';
 import {
   comparePasswords, createUser,
