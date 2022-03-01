@@ -1,4 +1,33 @@
-# Vefforritun 2, 2021, hópverkefni 1 (vef2-hopaverkefni1-sse)
+# Vefforritun 2, 2021 hópverkefni 1 (vef2-hopaverkefni1-sse)
+
+## Keyra verkefni á eigin vél
+
+Gert er ráð fyrir postgres og npm sé upp sett
+
+```bash
+git clone git@github.com:sthb13/vef2-hopaverkefni1-sse.git
+npm install
+createdb vef2-sse
+# uppfæra env
+npm run build  # býr til gagnagrunn og setur admin inn
+npm run lint  # athugar eslint
+npm run dev # þá keyrir þetta á http://localhost:3000/
+```
+
+## Test
+
+Til þess að keyra test þarf að vera með tvo terminal glugga opna
+í þann fyrri er keyrt:
+
+```bash
+npm run dev  # keyra á localhost 3000
+```
+
+```bash
+npm run test  # staðfestir virkni með testum
+```
+
+---
 
 [Kynning í fyrirlestri](https://youtu.be/W0k01_KRE4I).
 
