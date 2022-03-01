@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import passport from './auth/passport.js';
 import { errorHandler, notFoundHandler } from './error.js';
+import { router as registerRouter } from './auth/api.js';
 
 
 dotenv.config();
@@ -25,6 +26,8 @@ app.get('/', (req, res) => {
     test:'tests'
   });
 });
+
+app.use(registerRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

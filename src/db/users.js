@@ -1,6 +1,10 @@
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import pg from 'pg';
+import xss from 'xss';
+import {isString, isInt} from '../utils/utils.js';
+import {conditionalUpdate} from'./db.js';
+
 
 dotenv.config();
 
@@ -32,6 +36,7 @@ export async function comparePasswords(password, hash) {
   const result = await bcrypt.compare(password, hash);
   return result;
 }
+
 
 export async function findUserByUsername(username) {
   const q = 'SELECT * FROM users WHERE username = $1';
@@ -97,4 +102,41 @@ export async function createUser(name, username, password, admin=false) {
   }
 
   return null;
+}
+
+
+export async function updateUser(id, password, email) {
+  if (!isInt(id)) {
+    return null;
+  }
+
+  const fields = [
+    isString(password) ? 'password' : null,
+    isString(email) ? 'email' : null,
+  ];
+
+  let hashedPassword = null;
+
+  if (password) {
+    hashedPassword = await bcrypt.hash(password, parseInt(bcryptRounds, 10));
+  }
+
+  const values = [
+    hashedPassword,
+    isString(email) ? xss(email) : null,
+  ];
+
+  fields.push('updated');
+  values.push(new Date());
+
+  const result = await conditionalUpdate('users', id, fields, values);
+
+  if (!result) {
+    return null;
+  }
+
+  const updatedUser = result.rows[0];
+  delete updatedUser.password;
+
+  return updatedUser;
 }
