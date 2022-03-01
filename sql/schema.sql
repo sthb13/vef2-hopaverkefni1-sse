@@ -12,7 +12,7 @@ CREATE TABLE products (
 	categoryID INTEGER NOT NULL,
 	created TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	lastEdit TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT categoryID FOREIGN KEY (categoryID) REFERENCES category(id) 
+	CONSTRAINT categoryID FOREIGN KEY (categoryID) REFERENCES category(id)
 );
 
 CREATE TABLE baskets (
@@ -56,5 +56,6 @@ CREATE TABLE orderStatus (
 CREATE TABLE users (
 	id serial primary key,
 	username character varying(64) NOT NULL,
-	password character varying(256) NOT NULL
+	password character varying(256) NOT NULL,
+  admin BOOLEAN DEFAULT false
 );
