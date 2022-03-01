@@ -1,36 +1,18 @@
 import bcrypt from 'bcrypt';
-import dotenv from 'dotenv';
-import pg from 'pg';
 import xss from 'xss';
+import dotenv from 'dotenv';
 import {isString, isInt} from '../utils/utils.js';
-import {conditionalUpdate} from'./db.js';
-
+import {conditionalUpdate, query} from'./db.js';
 
 dotenv.config();
 
-const connectionString = process.env.DATABASE_URL;
+/**
+ * Hjálparföll fyrir notendur, uppfletting, búa til, uppfæra.
+ */
 
-const pool = new pg.Pool({ connectionString });
-
-pool.on('error', (err) => {
-  console.error('Unexpected error on idle client', err);
-  process.exit(-1);
-});
-
-export async function query(q, values = []) {
-  const client = await pool.connect();
-  let result;
-
-  try {
-    result = await client.query(q, values);
-  } catch (err) {
-    console.error('Villa í query', err);
-    throw err;
-  } finally {
-    client.release();
-  }
-  return result;
-}
+const {
+  BCRYPT_ROUNDS: bcryptRounds = 1,
+} = process.env;
 
 export async function comparePasswords(password, hash) {
   const result = await bcrypt.compare(password, hash);
@@ -83,19 +65,19 @@ export async function findAllUsers() {
 
   return null;
 }
-export async function createUser(name, username, password, admin=false) {
+export async function createUser(username, password, admin =false) {
   // Geymum hashað password!
   const hashedPassword = await bcrypt.hash(password, 11);
 
   const q = `
     INSERT INTO
-      users (name,username, password, admin)
-    VALUES ($1, $2, $3, $4)
+      users (username, password, admin)
+    VALUES ($1, $2, $3)
     RETURNING *
   `;
 
   try {
-    const result = await query(q, [name, username, hashedPassword, admin]);
+    const result = await query(q, [ username, hashedPassword, admin]);
     return result.rows[0];
   } catch (e) {
     console.error('Gat ekki búið til notanda');
@@ -104,15 +86,14 @@ export async function createUser(name, username, password, admin=false) {
   return null;
 }
 
-
-export async function updateUser(id, password, email) {
+export async function updateUser(id, username, password) {
   if (!isInt(id)) {
     return null;
   }
 
   const fields = [
+    isString(username) ? 'username' : null,
     isString(password) ? 'password' : null,
-    isString(email) ? 'email' : null,
   ];
 
   let hashedPassword = null;
@@ -122,12 +103,9 @@ export async function updateUser(id, password, email) {
   }
 
   const values = [
+    isString(username) ? xss(username) : null,
     hashedPassword,
-    isString(email) ? xss(email) : null,
   ];
-
-  fields.push('updated');
-  values.push(new Date());
 
   const result = await conditionalUpdate('users', id, fields, values);
 
@@ -136,7 +114,7 @@ export async function updateUser(id, password, email) {
   }
 
   const updatedUser = result.rows[0];
-  delete updatedUser.password;
+  // delete updatedUser.password;
 
   return updatedUser;
 }

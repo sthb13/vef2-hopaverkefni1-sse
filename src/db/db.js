@@ -7,6 +7,7 @@ const DROP_SCHEMA_FILE = './sql/drop.sql';
 const INSERT_TEST = './sql/post.sql';
 
 dotenv.config();
+
 const {
   DATABASE_URL: connectionString,
   NODE_ENV: nodeEnv = 'development'

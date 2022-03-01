@@ -1,23 +1,31 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 
-import { jwtOptions, tokenOptions } from './passport.js';
+import { body } from 'express-validator';
+import { jwtOptions, tokenOptions, requireAuthentication } from './passport.js';
 import {
-  comparePasswords, createUser, findUserById,
-  findUserByUsername,updateUser
+  comparePasswords, createUser,
+  findUserByUsername, findUserById,
+  updateUser,
 } from '../db/users.js';
 
 import { catchErrors } from '../utils/errorsHandler.js';
-import { logger } from '../utils/logger.js';
+// import { logger } from '../utils/logger.js';
 
+import { xssSanitizationUsername,
+  sanitizationMiddlewareUsername,
+  usernameDoesNotExistValidator,
+  validationUsernameAndPass,
+  usernameAndPaswordValidValidator,
+  atLeastOneBodyValueValidator
+} from '../validation/validators.js';
+import { validationCheck } from '../validation/helpers.js';
 /**
  * Skilgreinir API fyrir nýskráningu, innskráningu notanda, ásamt því að skila
  * upplýsingum um notanda og uppfæra þær.
  */
 
 export const router = express.Router();
-
-
 
 async function loginRoute(req, res) {
   const { username, password = '' } = req.body;
@@ -41,10 +49,10 @@ async function loginRoute(req, res) {
   return res.status(401).json({ error: 'Invalid password' });
 }
 
-/* async function registerRoute(req, res) {
-  const { username, email, password = '' } = req.body;
+async function registerRoute(req, res) {
+  const { username, password = '' } = req.body;
 
-  const result = await createUser(username, email, password);
+  const result = await createUser(username, password);
 
   delete result.password;
 
@@ -62,49 +70,81 @@ async function currentUserRoute(req, res) {
 
   delete user.password;
 
-  return res.json(user);
+  return res.status(200).json(user);
 }
 
 async function updateCurrentUserRoute(req, res) {
   const { id } = req.user;
-
   const user = await findUserById(id);
 
   if (!user) {
-    // shouldn't happen
-    logger.error('Unable to update user by id', id);
     return res.status(500).json(null);
   }
 
-  const { password, email } = req.body;
+  const { username = null ,password = null } = req.body;
 
-  const result = await updateUser(id, password, email);
+  let resultUsername=null;
+  let resultPass=null;
 
-  if (!result) {
+  if(username!==null && user.username !== username){
+    const findUser = await findUserByUsername(username);
+    if (findUser) {
+      return res.status(401).json({ error: 'username already exists' });
+    }
+
+    // TODO : Þarf að skoða með validationUsername
+    if(username.lenght < 4){
+      return res.status(401).json({ error: 'Notendarnafn verður að vera a.m.k 4 stafir' });
+    }
+    resultUsername= await updateUser(id, username, null);
+  }
+  if (password!==null){
+    const comparePass= await comparePasswords(password, user.password);
+    if(!comparePass){
+      resultPass= await updateUser(id, null, password);
+    }
+  }
+
+  if (!resultUsername && !resultPass) {
     return res.status(400).json({ error: 'Nothing to update' });
   }
 
-  return res.status(200).json(result);
-} */
+  const updatedUser = await findUserById(id);
+  delete updatedUser.password;
 
-
+  return res.status(200).json(updatedUser);
+}
 
 router.post(
   '/users/login',
+  validationUsernameAndPass,
+  xssSanitizationUsername,
+  sanitizationMiddlewareUsername,
+  usernameAndPaswordValidValidator,
+  validationCheck,
   catchErrors(loginRoute),
 );
 
-/* router.post(
+ router.post(
   '/users/register',
+  validationUsernameAndPass,
+  xssSanitizationUsername,
+  sanitizationMiddlewareUsername,
+  usernameDoesNotExistValidator,
+  validationCheck,
   catchErrors(registerRoute),
 );
 
 router.get(
   '/users/me',
+  requireAuthentication,
   catchErrors(currentUserRoute),
 );
 
 router.patch(
   '/users/me',
-  updateCurrentUserRoute
-); */
+  requireAuthentication,
+  atLeastOneBodyValueValidator(['username', 'password']),
+  validationCheck,
+  catchErrors(updateCurrentUserRoute)
+);

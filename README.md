@@ -6,6 +6,7 @@ Gert er ráð fyrir postgres og npm sé upp sett
 
 ```bash
 git clone git@github.com:sthb13/vef2-hopaverkefni1-sse.git
+cd vef2-hopaverkefni1-sse
 npm install
 createdb vef2-sse
 # uppfæra env
@@ -26,6 +27,13 @@ npm run dev  # keyra á localhost 3000
 ```bash
 npm run test  # staðfestir virkni með testum
 ```
+
+---
+
+Stjórnandi skráður í gagnagrunn:
+
+username : admin
+password : 123
 
 ---
 
