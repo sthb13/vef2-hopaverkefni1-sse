@@ -1,10 +1,12 @@
 import { readFile } from 'fs/promises';
+import dotenv from 'dotenv';
 import pg from 'pg';
 
 const SCHEMA_FILE = './sql/schema.sql';
 const DROP_SCHEMA_FILE = './sql/drop.sql';
 const INSERT_TEST = './sql/post.sql';
 
+dotenv.config();
 const {
   DATABASE_URL: connectionString,
   NODE_ENV: nodeEnv = 'development'

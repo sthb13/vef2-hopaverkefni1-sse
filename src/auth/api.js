@@ -17,15 +17,7 @@ import { logger } from '../utils/logger.js';
 
 export const router = express.Router();
 
-async function registerRoute(req, res) {
-  const { username, email, password = '' } = req.body;
 
-  const result = await createUser(username, email, password);
-
-  delete result.password;
-
-  return res.status(201).json(result);
-}
 
 async function loginRoute(req, res) {
   const { username, password = '' } = req.body;
@@ -47,6 +39,16 @@ async function loginRoute(req, res) {
   }
 
   return res.status(401).json({ error: 'Invalid password' });
+}
+
+/* async function registerRoute(req, res) {
+  const { username, email, password = '' } = req.body;
+
+  const result = await createUser(username, email, password);
+
+  delete result.password;
+
+  return res.status(201).json(result);
 }
 
 async function currentUserRoute(req, res) {
@@ -83,7 +85,7 @@ async function updateCurrentUserRoute(req, res) {
   }
 
   return res.status(200).json(result);
-}
+} */
 
 
 
@@ -92,7 +94,7 @@ router.post(
   catchErrors(loginRoute),
 );
 
- router.post(
+/* router.post(
   '/users/register',
   catchErrors(registerRoute),
 );
@@ -105,4 +107,4 @@ router.get(
 router.patch(
   '/users/me',
   updateCurrentUserRoute
-);
+); */
