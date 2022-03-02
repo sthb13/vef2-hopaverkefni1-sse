@@ -58,6 +58,18 @@ async function registerRoute(req, res) {
   return res.status(201).json(result);
 }
 
+async function userRoute(req,res){
+  const { id } = req.params;
+
+  const user = await findUserById(id);
+
+  if(!user) {
+    return res.status(404).json({ error: 'User not found'});
+  }
+
+  return res.status(200).json(user);
+}
+
 async function currentUserRoute(req, res) {
   const { user: { id } = {} } = req;
 
@@ -138,6 +150,12 @@ router.get(
   '/users/me',
   requireAuthentication,
   catchErrors(currentUserRoute),
+);
+
+router.get(
+  '/users/:id',
+  requireAuthentication,
+  catchErrors(userRoute),
 );
 
 router.patch(
