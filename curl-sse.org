@@ -1,0 +1,129 @@
+* post
+** users/login 
+
+#+name: get-admin-token
+#+begin_src shell
+      AUTH_TOKEN_ADMIN=$(curl -L -X POST 'http://localhost:3000/users/login' \
+                  -H 'Content-Type: application/json' \
+                  --data '{"username": "admin", "password": "123"}' | jq -r ".token")
+      echo $AUTH_TOKEN_ADMIN;
+#+end_src
+
+#+RESULTS: get-admin-token
+: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjQ2MjM3NTgwLCJleHAiOjE2NDYyNDI1ODB9.5pzUuXz_kzCZ6YX49x6yRbQuGU3ewVZZb5HEDVy3-_w
+
+#+name: get-user-token
+#+begin_src shell
+     AUTH_TOKEN_USER=$(curl -L -X POST 'http://localhost:3000/users/login' \
+                 -H 'Content-Type: application/json' \
+                 --data '{"username": "jon@gmail.com", "password": "test"}' | jq -r ".token")
+     echo $AUTH_TOKEN_USER;
+#+end_src
+
+** users/register
+#+BEGIN_SRC shell :results raw 
+  curl --location --request POST 'http://localhost:3000/users/register' \
+       -H 'Content-Type: application/json' \
+       --data '{"username": "skuli@gmail.com", "password": "qwerty"}' 
+#+END_SRC
+
+#+RESULTS:
+{"id":2,"username":"skuli@gmail.com","admin":false}
+{"Skilaboð":"Skráning tókst","nafn":"skuli","notendanafn":"skuli@gmail.com"}
+{"id":3,"name":"skuli","username":"skuli@gmail.com","password":"$2b$11$8ycuD51NlNb/7qEEMMLRC.FAitbk0RLdRT7S7epqwfvalXod2WgEW","isadmin":false}
+
+** events/
+#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token
+  curl -L -X POST "http://localhost:3000/events" \
+       -H "Authorization: Bearer $AUTH_TOKEN" \
+       -H "Content-Type: application/json" \
+       --data '{"id": "1", "name": "Aðalfundur fyrir forritara", "description": "Allir að mæta!"}' 
+#+END_SRC
+
+#+RESULTS:
+| id | Aðalfundur fyrir forritara | adalfundur-fyrir-forritara | Allir að mæta! |
+{"error":"invalid token"}
+{"error":"invalid token"}
+{"error":"invalid token"}
+
+
+* get
+** users/
+
+#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token
+   curl -L -X GET "http://localhost:3000/users/"\
+        -H "Authorization: Bearer $AUTH_TOKEN"\
+        -H "Content-Type: application/json" 
+#+END_SRC
+
+#+RESULTS:
+| username":"jon@gmail.com | username":"unnur@gmail.com |
+
+** users/id
+
+#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token
+  curl -L -X GET "http://localhost:3000/users/1" \
+       -H "Authorization: Bearer $AUTH_TOKEN" \
+       -H "Content-Type: application/json" 
+#+END_SRC
+
+#+RESULTS:
+: error":"Not found
+
+** users/me
+#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token
+  curl --location --request GET "http://localhost:3000/users/me" \
+       -H "Authorization: Bearer $AUTH_TOKEN" \
+       -H "Content-Type: application/json" 
+#+END_SRC
+
+#+RESULTS:
+| id | admin | admin:true} |
+
+** events/id
+#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token
+  curl --location --request GET "http://localhost:3000/events/1" \
+       -H "Authorization: Bearer $AUTH_TOKEN" \
+       -H "Content-Type: application/json" 
+#+END_SRC
+
+#+RESULTS:
+| id | userid:1 | Forritarahittingur í febrúar | forritarahittingur-i-februar | Forritarar hittast í febrúar og forrita saman eitthvað frábært. | 2022-03-01T00:00:00.000Z | 2022-03-01T00:00:00.000Z |
+
+** events
+
+#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token :results raw 
+  curl --location --request GET "Http://localhost:3000/events/" \
+       -H "Authorization: Bearer $AUTH_TOKEN" \
+       -H "Content-Type: application/json" 
+#+END_SRC
+
+#+RESULTS:
+[{"id":1,"name":"Forritarahittingur í febrúar","slug":"forritarahittingur-i-februar","description":"Forritarar hittast í febrúar og forrita saman eitthvað frábært.","created":"2022-03-01T00:00:00.000Z","updated":"2022-03-01T00:00:00.000Z"},{"id":2,"name":"Hönnuðahittingur í mars","slug":"honnudahittingur-i-mars","description":"Spennandi hittingur hönnuða í Hönnunarmars.","created":"2022-03-01T00:00:00.000Z","updated":"2022-03-01T00:00:00.000Z"},{"id":4,"name":"Aðalfundur fyrir forritara","slug":"adalfundur-fyrir-forritara","description":"Allir að mæta!","created":"2022-03-01T00:00:00.000Z","updated":"2022-03-01T00:00:00.000Z"},{"id":5,"name":"Aðalfundur fyrir forritara","slug":"adalfundur-fyrir-forritara","description":"Allir að mæta!","created":"2022-03-02T00:00:00.000Z","updated":"2022-03-02T00:00:00.000Z"}]
+
+* patch
+
+
+#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token :results raw 
+  curl -X PATCH "http://localhost:3000/events/2" \
+       -H "Authorization: Bearer $AUTH_TOKEN" \
+       -H "Content-Type: application/json" \
+       -d '{ "description": "Ókeypis bjór!!"}'
+#+END_SRC
+
+#+RESULTS:
+{"error":"Ekki tókst að uppfæru viðburðinn"}
+{"update":{"id":6,"userid":2,"name":"Aðalfundur fyrir forritara","slug":"adalfundur-fyrir-forritara","description":"Ókeypis bjór!!"}}
+
+* delete
+
+#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token :results raw 
+  curl -X DELETE "http://localhost:3000/events/2" \
+       -H "Authorization: Bearer $AUTH_TOKEN" \
+       -H "Content-Type: application/json" 
+#+END_SRC
+
+#+RESULTS:
+: {"error":"Ekki tókst að eiða viðburðinn"}
+
+
