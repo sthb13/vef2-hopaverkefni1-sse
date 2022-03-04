@@ -36,6 +36,9 @@ username : admin
 password : 123
 
 ---
+## Heroku
+https://vef2-hopaverkefni1-sse.herokuapp.com/
+---
 
 [Kynning í fyrirlestri](https://youtu.be/W0k01_KRE4I).
 
