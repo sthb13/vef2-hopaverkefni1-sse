@@ -32,5 +32,5 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 app.listen(port, () => {
-  console.info('Server running at http://localhost:3000/');
+  console.info(`Server running at http://localhost:${port}/`);
 });
