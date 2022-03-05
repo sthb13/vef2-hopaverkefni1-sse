@@ -10,7 +10,7 @@
 #+end_src
 
 #+RESULTS: get-admin-token
-: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjQ2MjM3NTgwLCJleHAiOjE2NDYyNDI1ODB9.5pzUuXz_kzCZ6YX49x6yRbQuGU3ewVZZb5HEDVy3-_w
+: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjQ2NTEwNDEwLCJleHAiOjE2NDY1MTU0MTB9.rXXCiW9OLYGqlb30I2uk_V39iU68tGk6bOgg1lbx5vo
 
 #+name: get-user-token
 #+begin_src shell
@@ -20,6 +20,9 @@
      echo $AUTH_TOKEN_USER;
 #+end_src
 
+#+RESULTS: get-user-token
+: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNjQ2NTEwODM0LCJleHAiOjE2NDY1MTU4MzR9.VgEP-Pzd_whHnGlygpl1mLoj2-i_ZBuy53AXXEQnMjM
+
 ** users/register
 #+BEGIN_SRC shell :results raw
   curl --location --request POST 'http://localhost:3000/users/register' \
@@ -28,101 +31,141 @@
 #+END_SRC
 
 #+RESULTS:
+{"id":2,"username":"jon@gmail.com","admin":false}
 {"id":2,"username":"skuli@gmail.com","admin":false}
 {"Skilaboð":"Skráning tókst","nafn":"skuli","notendanafn":"skuli@gmail.com"}
 {"id":3,"name":"skuli","username":"skuli@gmail.com","password":"$2b$11$8ycuD51NlNb/7qEEMMLRC.FAitbk0RLdRT7S7epqwfvalXod2WgEW","isadmin":false}
 
-** events/
-#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token
-  curl -L -X POST "http://localhost:3000/events" \
-       -H "Authorization: Bearer $AUTH_TOKEN" \
+** categories/
+#+BEGIN_SRC shell :var AUTH_TOKEN_USER=get-user-token
+  curl -L -X POST "http://localhost:3000/categories" \
+       -H "Authorization: Bearer $AUTH_TOKEN_USER" \
        -H "Content-Type: application/json" \
-       --data '{"id": "1", "name": "Aðalfundur fyrir forritara", "description": "Allir að mæta!"}'
+       --data '{ "title": "Súpapopa"}'
 #+END_SRC
 
 #+RESULTS:
-| id | Aðalfundur fyrir forritara | adalfundur-fyrir-forritara | Allir að mæta! |
+: error":"insufficient authorization
 {"error":"invalid token"}
 {"error":"invalid token"}
 {"error":"invalid token"}
 
+#+BEGIN_SRC shell :var AUTH_TOKEN_ADMIN=get-admin-token
+  curl -L -X POST "http://localhost:3000/categories" \
+       -H "Authorization: Bearer $AUTH_TOKEN_ADMIN" \
+       -H "Content-Type: application/json" \
+       --data '{ "title": "Súpasip"}'
+#+END_SRC
+
+#+RESULTS:
 
 * get
 ** users/
 
-#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token
+#+BEGIN_SRC shell :var AUTH_TOKEN_ADMIN=get-admin-token
    curl -L -X GET "http://localhost:3000/users/"\
-        -H "Authorization: Bearer $AUTH_TOKEN"\
+        -H "Authorization: Bearer $AUTH_TOKEN_ADMIN"\
         -H "Content-Type: application/json"
 #+END_SRC
 
 #+RESULTS:
-| username":"jon@gmail.com | username":"unnur@gmail.com |
+: error":"Not found
 
 ** users/:id
 
-#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token
-  curl -L -X GET "http://localhost:3000/users/1" \
-       -H "Authorization: Bearer $AUTH_TOKEN" \
+#+BEGIN_SRC shell :var AUTH_TOKEN_ADMIN=get-admin-token
+  curl -L -X GET "http://localhost:3000/users/2" \
+       -H "Authorization: Bearer $AUTH_TOKEN_ADMIN" \
        -H "Content-Type: application/json"
 #+END_SRC
 
 #+RESULTS:
-| id | admin | $2a$11$pgj3.zySyFOvIQEpD7W6Aund1Tw.BFarXxgLJxLbrzIv/4Nteisii | admin:true} |
+| id | jon@gmail.com | $2b$11$qjPopjago8sXKWhCUC9SYeV4SH22U9dhBPJLo6hx8XaA2orngTRmC | admin:false} |
 
 ** users/me
-#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token
+#+BEGIN_SRC shell :var AUTH_TOKEN_USER=get-user-token
   curl --location --request GET "http://localhost:3000/users/me" \
-       -H "Authorization: Bearer $AUTH_TOKEN" \
+       -H "Authorization: Bearer $AUTH_TOKEN_USER" \
+       -H "Content-Type: application/json"
+#+END_SRC
+
+#+RESULTS:
+| id | jon@gmail.com | admin:false} |
+
+
+#+BEGIN_SRC shell :var AUTH_TOKEN_ADMIN=get-admin-token
+  curl --location --request GET "http://localhost:3000/users/me" \
+       -H "Authorization: Bearer $AUTH_TOKEN_ADMIN" \
        -H "Content-Type: application/json"
 #+END_SRC
 
 #+RESULTS:
 | id | admin | admin:true} |
 
-** events/id
-#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token
-  curl --location --request GET "http://localhost:3000/events/1" \
-       -H "Authorization: Bearer $AUTH_TOKEN" \
-       -H "Content-Type: application/json"
-#+END_SRC
-
-#+RESULTS:
-| id | userid:1 | Forritarahittingur í febrúar | forritarahittingur-i-februar | Forritarar hittast í febrúar og forrita saman eitthvað frábært. | 2022-03-01T00:00:00.000Z | 2022-03-01T00:00:00.000Z |
-
-** events
+** menu
 
 #+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token :results raw
-  curl --location --request GET "Http://localhost:3000/events/" \
-       -H "Authorization: Bearer $AUTH_TOKEN" \
+  curl -L -X GET "Http://localhost:3000/menu" \
        -H "Content-Type: application/json"
 #+END_SRC
 
 #+RESULTS:
+[{"id":22,"title":"Flöskubjór","price":1290,"description":"Peroni, 33cl","img":"todo","categoryid":5,"created":"2022-03-02T20:56:52.090Z","lastedit":"2022-03-02T20:56:52.090Z"},{"id":21,"title":"Kranabjór","price":990,"description":"Egils Gull, 50cl","img":"todo","categoryid":5,"created":"2022-03-02T20:56:08.782Z","lastedit":"2022-03-02T20:56:08.782Z"},{"id":20,"title":"Hvítvín hússins","price":990,"description":"Falanghina, Kampanía, 20cl","img":"todo","categoryid":5,"created":"2022-03-02T20:53:44.034Z","lastedit":"2022-03-02T20:53:44.034Z"},{"id":19,"title":"Rauðvín hússins","price":990,"description":"Aglianico, Kampanía, 20cl","img":"todo","categoryid":5,"created":"2022-03-02T20:52:55.025Z","lastedit":"2022-03-02T20:52:55.025Z"},{"id":18,"title":"Penne con verdure","price":2690,"description":"Penne með grænmeti, sólþurrkaðum tómatum og ólífum","img":"todo","categoryid":4,"created":"2022-03-02T20:48:57.096Z","lastedit":"2022-03-02T20:48:57.096Z"},{"id":16,"title":"Penne all'arrabiata","price":2490,"description":"Penne með chilli og tómatsósu","img":"todo","categoryid":4,"created":"2022-03-02T20:45:34.557Z","lastedit":"2022-03-02T20:45:34.557Z"},{"id":17,"title":"Spaghetti Bolognese","price":2890,"description":"Spaghetti með kjötsósu","img":"todo","categoryid":4,"created":"2022-03-02T20:44:18.829Z","lastedit":"2022-03-02T20:44:18.829Z"},{"id":15,"title":"Spaghetti Carbonara","price":2890,"description":"Spaghetti með beikon, rjóma, eggi og svörtum pipar","img":"todo","categoryid":4,"created":"2022-03-02T20:42:52.845Z","lastedit":"2022-03-02T20:42:52.845Z"},{"id":14,"title":"Lasagne","price":2890,"description":"Lasagna með Bolognese- og Bechamel sósu","img":"todo","categoryid":4,"created":"2022-03-02T20:41:44.834Z","lastedit":"2022-03-02T20:41:44.834Z"},{"id":13,"title":"Fritto Cotto","price":2390,"description":"Djúpsteikt Margherita með skinku","img":"todo","categoryid":1,"created":"2022-03-02T20:34:31.899Z","lastedit":"2022-03-02T20:34:31.899Z"},{"id":7,"title":"Fritto Verdure","price":2590,"description":"Djúosteikt Margherita með kúrbít, melanzani, papriku","img":"todo","categoryid":1,"created":"2022-03-02T20:33:33.517Z","lastedit":"2022-03-02T20:33:33.517Z"},{"id":12,"title":"Fritto Salame","price":2390,"description":"Djúpsteikt Margherita með pepperóni","img":"todo","categoryid":1,"created":"2022-03-02T20:30:52.561Z","lastedit":"2022-03-02T20:30:52.561Z"},{"id":6,"title":"Pesto","price":2490,"description":"Heimagert basilpesto, mozzarella, kirsuberjatómatar, parmesan","img":"todo","categoryid":2,"created":"2022-03-02T20:26:53.022Z","lastedit":"2022-03-02T20:26:53.022Z"},{"id":5,"title":"Egidio","price":2590,"description":"Mozzarella, nautakjöt, rucola, sítrónuolía","img":"todo","categoryid":2,"created":"2022-03-02T20:25:32.996Z","lastedit":"2022-03-02T20:25:32.996Z"},{"id":4,"title":"Bianca","price":2190,"description":"Mozzarella, kirsuberjatómatar, rucola","img":"todo","categoryid":2,"created":"2022-03-02T20:23:17.903Z","lastedit":"2022-03-02T20:23:17.903Z"},{"id":3,"title":"Patate","price":2390,"description":"Kartöflur, mozzarella, óreganó","img":"todo","categoryid":2,"created":"2022-03-02T20:20:50.742Z","lastedit":"2022-03-02T20:20:50.742Z"},{"id":11,"title":"Salame","price":2390,"description":"Margherita með pepperóní","img":"todo","categoryid":3,"created":"2022-03-02T20:20:50.737Z","lastedit":"2022-03-02T20:20:50.737Z"},{"id":10,"title":"Prosciutto Crudo","price":2590,"description":"Margherita með hráskinku frá Parma","img":"todo","categoryid":3,"created":"2022-03-02T20:17:13.846Z","lastedit":"2022-03-02T20:17:13.846Z"},{"id":9,"title":"Prosciutto Cotto","price":2390,"description":"Margherita með skinku","img":"todo","categoryid":3,"created":"2022-03-02T20:01:18.683Z","lastedit":"2022-03-02T20:01:18.683Z"},{"id":2,"title":"Margherita","price":1990,"description":"Tómatsósa, mozzarella, basil","img":"todo","categoryid":3,"created":"2022-03-02T20:00:11.230Z","lastedit":"2022-03-02T20:00:11.230Z"},{"id":8,"title":"Alici","price":2190,"description":"Marinara með ansjósum","img":"todo","categoryid":3,"created":"2022-03-02T19:57:31.266Z","lastedit":"2022-03-02T19:57:31.266Z"},{"id":1,"title":"Marinara","price":1590,"description":"Tómatsósa, óreganó, hvítlauksolía","img":"todo","categoryid":3,"created":"2022-03-02T19:54:49.936Z","lastedit":"2022-03-02T19:54:49.936Z"}]
 [{"id":1,"name":"Forritarahittingur í febrúar","slug":"forritarahittingur-i-februar","description":"Forritarar hittast í febrúar og forrita saman eitthvað frábært.","created":"2022-03-01T00:00:00.000Z","updated":"2022-03-01T00:00:00.000Z"},{"id":2,"name":"Hönnuðahittingur í mars","slug":"honnudahittingur-i-mars","description":"Spennandi hittingur hönnuða í Hönnunarmars.","created":"2022-03-01T00:00:00.000Z","updated":"2022-03-01T00:00:00.000Z"},{"id":4,"name":"Aðalfundur fyrir forritara","slug":"adalfundur-fyrir-forritara","description":"Allir að mæta!","created":"2022-03-01T00:00:00.000Z","updated":"2022-03-01T00:00:00.000Z"},{"id":5,"name":"Aðalfundur fyrir forritara","slug":"adalfundur-fyrir-forritara","description":"Allir að mæta!","created":"2022-03-02T00:00:00.000Z","updated":"2022-03-02T00:00:00.000Z"}]
 
-* patch
-** events/:id
+
+** categories
 
 #+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token :results raw
-  curl -X PATCH "http://localhost:3000/events/2" \
-       -H "Authorization: Bearer $AUTH_TOKEN" \
-       -H "Content-Type: application/json" \
-       -d '{ "description": "Ókeypis bjór!!"}'
+  curl -L -X GET "Http://localhost:3000/categories" \
+       -H "Content-Type: application/json"
 #+END_SRC
 
 #+RESULTS:
+[{"id":1,"title":"Pizze Fritte"},{"id":2,"title":"PIzze Bianche"},{"id":3,"title":"Pizze Rosse"},{"id":4,"title":"Pasta"},{"id":5,"title":"Drykkir"}]
+{"error":"No categories found"}
+{"error":"No categories found"}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>ReferenceError: findCategories is not defined<br> &nbsp; &nbsp;at categoriesRoute (file:///home/skuli/Documents/vefforritun2022/vef2-hopaverkefni1-sse/src/api/index.js:25:16)<br> &nbsp; &nbsp;at file:///home/skuli/Documents/vefforritun2022/vef2-hopaverkefni1-sse/src/utils/errorsHandler.js:2:30<br> &nbsp; &nbsp;at Layer.handle [as handle_request] (/home/skuli/Documents/vefforritun2022/vef2-hopaverkefni1-sse/node_modules/express/lib/router/layer.js:95:5)<br> &nbsp; &nbsp;at next (/home/skuli/Documents/vefforritun2022/vef2-hopaverkefni1-sse/node_modules/express/lib/router/route.js:137:13)<br> &nbsp; &nbsp;at Route.dispatch (/home/skuli/Documents/vefforritun2022/vef2-hopaverkefni1-sse/node_modules/express/lib/router/route.js:112:3)<br> &nbsp; &nbsp;at Layer.handle [as handle_request] (/home/skuli/Documents/vefforritun2022/vef2-hopaverkefni1-sse/node_modules/express/lib/router/layer.js:95:5)<br> &nbsp; &nbsp;at /home/skuli/Documents/vefforritun2022/vef2-hopaverkefni1-sse/node_modules/express/lib/router/index.js:281:22<br> &nbsp; &nbsp;at Function.process_params (/home/skuli/Documents/vefforritun2022/vef2-hopaverkefni1-sse/node_modules/express/lib/router/index.js:341:12)<br> &nbsp; &nbsp;at next (/home/skuli/Documents/vefforritun2022/vef2-hopaverkefni1-sse/node_modules/express/lib/router/index.js:275:10)<br> &nbsp; &nbsp;at Function.handle (/home/skuli/Documents/vefforritun2022/vef2-hopaverkefni1-sse/node_modules/express/lib/router/index.js:174:3)</pre>
+</body>
+</html>
+[{"id":22,"title":"Flöskubjór","price":1290,"description":"Peroni, 33cl","img":"todo","categoryid":5,"created":"2022-03-02T20:56:52.090Z","lastedit":"2022-03-02T20:56:52.090Z"},{"id":21,"title":"Kranabjór","price":990,"description":"Egils Gull, 50cl","img":"todo","categoryid":5,"created":"2022-03-02T20:56:08.782Z","lastedit":"2022-03-02T20:56:08.782Z"},{"id":20,"title":"Hvítvín hússins","price":990,"description":"Falanghina, Kampanía, 20cl","img":"todo","categoryid":5,"created":"2022-03-02T20:53:44.034Z","lastedit":"2022-03-02T20:53:44.034Z"},{"id":19,"title":"Rauðvín hússins","price":990,"description":"Aglianico, Kampanía, 20cl","img":"todo","categoryid":5,"created":"2022-03-02T20:52:55.025Z","lastedit":"2022-03-02T20:52:55.025Z"},{"id":18,"title":"Penne con verdure","price":2690,"description":"Penne með grænmeti, sólþurrkaðum tómatum og ólífum","img":"todo","categoryid":4,"created":"2022-03-02T20:48:57.096Z","lastedit":"2022-03-02T20:48:57.096Z"},{"id":16,"title":"Penne all'arrabiata","price":2490,"description":"Penne með chilli og tómatsósu","img":"todo","categoryid":4,"created":"2022-03-02T20:45:34.557Z","lastedit":"2022-03-02T20:45:34.557Z"},{"id":17,"title":"Spaghetti Bolognese","price":2890,"description":"Spaghetti með kjötsósu","img":"todo","categoryid":4,"created":"2022-03-02T20:44:18.829Z","lastedit":"2022-03-02T20:44:18.829Z"},{"id":15,"title":"Spaghetti Carbonara","price":2890,"description":"Spaghetti með beikon, rjóma, eggi og svörtum pipar","img":"todo","categoryid":4,"created":"2022-03-02T20:42:52.845Z","lastedit":"2022-03-02T20:42:52.845Z"},{"id":14,"title":"Lasagne","price":2890,"description":"Lasagna með Bolognese- og Bechamel sósu","img":"todo","categoryid":4,"created":"2022-03-02T20:41:44.834Z","lastedit":"2022-03-02T20:41:44.834Z"},{"id":13,"title":"Fritto Cotto","price":2390,"description":"Djúpsteikt Margherita með skinku","img":"todo","categoryid":1,"created":"2022-03-02T20:34:31.899Z","lastedit":"2022-03-02T20:34:31.899Z"},{"id":7,"title":"Fritto Verdure","price":2590,"description":"Djúosteikt Margherita með kúrbít, melanzani, papriku","img":"todo","categoryid":1,"created":"2022-03-02T20:33:33.517Z","lastedit":"2022-03-02T20:33:33.517Z"},{"id":12,"title":"Fritto Salame","price":2390,"description":"Djúpsteikt Margherita með pepperóni","img":"todo","categoryid":1,"created":"2022-03-02T20:30:52.561Z","lastedit":"2022-03-02T20:30:52.561Z"},{"id":6,"title":"Pesto","price":2490,"description":"Heimagert basilpesto, mozzarella, kirsuberjatómatar, parmesan","img":"todo","categoryid":2,"created":"2022-03-02T20:26:53.022Z","lastedit":"2022-03-02T20:26:53.022Z"},{"id":5,"title":"Egidio","price":2590,"description":"Mozzarella, nautakjöt, rucola, sítrónuolía","img":"todo","categoryid":2,"created":"2022-03-02T20:25:32.996Z","lastedit":"2022-03-02T20:25:32.996Z"},{"id":4,"title":"Bianca","price":2190,"description":"Mozzarella, kirsuberjatómatar, rucola","img":"todo","categoryid":2,"created":"2022-03-02T20:23:17.903Z","lastedit":"2022-03-02T20:23:17.903Z"},{"id":3,"title":"Patate","price":2390,"description":"Kartöflur, mozzarella, óreganó","img":"todo","categoryid":2,"created":"2022-03-02T20:20:50.742Z","lastedit":"2022-03-02T20:20:50.742Z"},{"id":11,"title":"Salame","price":2390,"description":"Margherita með pepperóní","img":"todo","categoryid":3,"created":"2022-03-02T20:20:50.737Z","lastedit":"2022-03-02T20:20:50.737Z"},{"id":10,"title":"Prosciutto Crudo","price":2590,"description":"Margherita með hráskinku frá Parma","img":"todo","categoryid":3,"created":"2022-03-02T20:17:13.846Z","lastedit":"2022-03-02T20:17:13.846Z"},{"id":9,"title":"Prosciutto Cotto","price":2390,"description":"Margherita með skinku","img":"todo","categoryid":3,"created":"2022-03-02T20:01:18.683Z","lastedit":"2022-03-02T20:01:18.683Z"},{"id":2,"title":"Margherita","price":1990,"description":"Tómatsósa, mozzarella, basil","img":"todo","categoryid":3,"created":"2022-03-02T20:00:11.230Z","lastedit":"2022-03-02T20:00:11.230Z"},{"id":8,"title":"Alici","price":2190,"description":"Marinara með ansjósum","img":"todo","categoryid":3,"created":"2022-03-02T19:57:31.266Z","lastedit":"2022-03-02T19:57:31.266Z"},{"id":1,"title":"Marinara","price":1590,"description":"Tómatsósa, óreganó, hvítlauksolía","img":"todo","categoryid":3,"created":"2022-03-02T19:54:49.936Z","lastedit":"2022-03-02T19:54:49.936Z"}]
+
+* patch
+** categories/:id
+
+#+BEGIN_SRC shell :var AUTH_TOKEN_ADMIN=get-admin-token :results raw
+  curl -X PATCH "http://localhost:3000/categories/6" \
+       -H "Authorization: Bearer $AUTH_TOKEN_ADMIN" \
+       -H "Content-Type: application/json" \
+       -d '{ "title": "Aperitivo"}'
+#+END_SRC
+
+#+RESULTS:
+{"error":"Not found"}
+{"error":"Not found"}
+{"error":"Not found"}
 {"error":"Ekki tókst að uppfæru viðburðinn"}
 {"update":{"id":6,"userid":2,"name":"Aðalfundur fyrir forritara","slug":"adalfundur-fyrir-forritara","description":"Ókeypis bjór!!"}}
 
 * delete
-** events/:id
+** categories/:id
 
-#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token :results raw
-  curl -X DELETE "http://localhost:3000/events/2" \
-       -H "Authorization: Bearer $AUTH_TOKEN" \
+#+BEGIN_SRC shell :var AUTH_TOKEN_ADMIN=get-admin-token :results raw
+  curl -X DELETE "http://localhost:3000/categories/3" \
+       -H "Authorization: Bearer $AUTH_TOKEN_ADMIN" \
        -H "Content-Type: application/json"
 #+END_SRC
 
 #+RESULTS:
-: {"error":"Ekki tókst að eiða viðburðinn"}
+null
+null
+null
+null
+{"error":"Not found"}

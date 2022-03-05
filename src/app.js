@@ -3,6 +3,7 @@ import express from 'express';
 import passport from './auth/passport.js';
 import { errorHandler, notFoundHandler } from './error.js';
 import { router as registerRouter } from './auth/api.js';
+import { router as apiRouter } from './api/index.js';
 
 
 dotenv.config();
@@ -27,6 +28,7 @@ app.get('/', (req, res) => {
 });
 
 app.use(registerRouter);
+app.use(apiRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

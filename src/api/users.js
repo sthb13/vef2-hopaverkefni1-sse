@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import xss from 'xss';
 import dotenv from 'dotenv';
 import {isString, isInt} from '../utils/utils.js';
-import {conditionalUpdate, query} from'./db.js';
+import {conditionalUpdate, query} from'../db.js';
 
 dotenv.config();
 
@@ -65,7 +65,7 @@ export async function findAllUsers() {
 
   return null;
 }
-export async function createUser(username, password, admin =false) {
+export async function createUser(username, password, admin = false) {
   // Geymum hashað password!
   const hashedPassword = await bcrypt.hash(password, 11);
 
