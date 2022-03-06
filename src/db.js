@@ -107,3 +107,35 @@ export async function conditionalUpdate(table, id, fields, values) {
 
   return result;
 }
+
+
+export async function getEveryProductByDate() {
+  const q = `
+    SELECT * 
+    FROM products
+    ORDER BY created ASC
+    `;
+  const result = await query(q);
+  if (result && result.rowCount != 0) {
+    return result.rows;
+  }
+  return null;
+}
+
+export async function addProduct(title, price, description, img, categoryID) {
+  const values = [title, price, description, img, categoryID];
+  const q = `
+    INSERT INTO
+      products (title, price, description, img, categoryID)
+    VALUES
+      ($1, $2, $3, $4, $5)
+    RETURNING 
+      title, price, description, img, categoryID
+    `;
+  const result = await query(q, values);
+  console.log(result.rows);
+  if (result){
+    return result.rows;
+  }
+  return null;
+}
