@@ -29,3 +29,12 @@ INSERT INTO products (title,price,description,img,categoryid,created,lastedit) V
 INSERT INTO products (title,price,description,img,categoryid,created,lastedit) VALUES ('Hvítvín hússins',990,'Falanghina, Kampanía, 20cl','todo',5,'2022-03-02 20:53:44.034155+00','2022-03-02 20:53:44.034155+00');
 INSERT INTO products (title,price,description,img,categoryid,created,lastedit) VALUES ('Kranabjór',990,'Egils Gull, 50cl','todo',5,'2022-03-02 20:56:08.782836+00','2022-03-02 20:56:08.782836+00');
 INSERT INTO products (title,price,description,img,categoryid,created,lastedit) VALUES ('Flöskubjór',1290,'Peroni, 33cl','todo',5,'2022-03-02 20:56:52.090565+00','2022-03-02 20:56:52.090565+00');
+
+INSERT INTO baskets (id,created) VALUES ('c75a4f3c-083d-4805-b6ce-b990d044db47','2022-03-05 22:03:55.801724+00');
+INSERT INTO baskets (id,created) VALUES ('f4ddef09-cadb-4472-bfa8-152b250a8496','2022-03-05 22:04:35.254515+00');
+
+INSERT INTO basketitems (productid,basketid,amount) VALUES (1,'c75a4f3c-083d-4805-b6ce-b990d044db47',1);
+INSERT INTO basketitems (productid,basketid,amount) VALUES (2,'c75a4f3c-083d-4805-b6ce-b990d044db47',2);
+INSERT INTO basketitems (productid,basketid,amount) VALUES (3,'c75a4f3c-083d-4805-b6ce-b990d044db47',1);
+INSERT INTO basketitems (productid,basketid,amount) VALUES (5,'f4ddef09-cadb-4472-bfa8-152b250a8496',3);
+INSERT INTO basketitems (productid,basketid,amount) VALUES (5,'f4ddef09-cadb-4472-bfa8-152b250a8496',2);

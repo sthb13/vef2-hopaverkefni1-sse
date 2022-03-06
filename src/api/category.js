@@ -10,7 +10,6 @@ export async function findCategories(){
     console.error('Engar vörur fundust');
   }
   return null;
-
 }
 
 export async function createCategory(title){
