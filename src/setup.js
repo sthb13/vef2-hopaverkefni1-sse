@@ -1,4 +1,4 @@
-import { createSchema, dropSchema, end, insertTest } from './db/db.js';
+import { createSchema, dropSchema, end, insertTest } from './db.js';
 
 // Setja upp töflur og gögn fyrir vidburdir DB
 async function create() {

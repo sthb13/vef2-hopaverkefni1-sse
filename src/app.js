@@ -1,5 +1,7 @@
 import dotenv from 'dotenv';
 import express from 'express';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 import passport from './auth/passport.js';
 import { errorHandler, notFoundHandler } from './error.js';
 import { router as registerRouter } from './auth/api.js';
@@ -16,6 +18,15 @@ if (!connectionString) {
 }
 
 const app = express();
+
+// Sér um að req.body innihaldi gögn úr formi
+app.use(express.urlencoded({ extended: true }));
+const path = dirname(fileURLToPath(import.meta.url));
+app.use(express.static(join(path, '../public')));
+app.set('views', join(path, '../views'));
+app.set('view engine', 'ejs');
+
+
 
 // Notum JSON middleware til að geta tekið við JSON frá client
 app.use(express.json());

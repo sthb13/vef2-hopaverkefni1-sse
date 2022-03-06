@@ -14,8 +14,8 @@ export async function findProducts(){
 
 export async function createProduct(title, price, description, img, categoryId){
   const q = `INSERT INTO
-               products (title, price, description, img, categoryID, created, lastEdit)
-             VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`;
+               products (title, price, description, img, categoryID)
+             VALUES ($1, $2, $3, $4, $5`;
   try {
     const result = await query (q, [title, price, description, img, categoryId]);
     return result.rows[0];
