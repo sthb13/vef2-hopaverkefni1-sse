@@ -1,6 +1,6 @@
 import { body } from 'express-validator';
 import xss from 'xss';
-import {comparePasswords, findUserByUsername} from '../db/users.js';
+import {comparePasswords, findUserByUsername} from '../api/users.js';
 import { LoginError } from '../utils/errorsHandler.js';
 import { logger } from '../utils/logger.js';
 

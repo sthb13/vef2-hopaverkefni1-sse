@@ -6,7 +6,7 @@ import {
   comparePasswords, createUser,
   findUserByUsername, findUserById,
   updateUser,
-} from '../db/users.js';
+} from '../api/users.js';
 
 import { catchErrors } from '../utils/errorsHandler.js';
 // import { logger } from '../utils/logger.js';

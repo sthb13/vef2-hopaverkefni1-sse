@@ -1,6 +1,6 @@
 import passport from 'passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
-import { findUserById } from '../db/users.js';
+import { findUserById } from '../api/users.js';
 
 /**
  * Passport stillingar og middleware til að athuga hvort notandi sé innsrkáður

@@ -10,7 +10,7 @@
 #+end_src
 
 #+RESULTS: get-admin-token
-: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjQ2MjM3NTgwLCJleHAiOjE2NDYyNDI1ODB9.5pzUuXz_kzCZ6YX49x6yRbQuGU3ewVZZb5HEDVy3-_w
+: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjQ2NTEwNDEwLCJleHAiOjE2NDY1MTU0MTB9.rXXCiW9OLYGqlb30I2uk_V39iU68tGk6bOgg1lbx5vo
 
 #+name: get-user-token
 #+begin_src shell
@@ -20,6 +20,9 @@
      echo $AUTH_TOKEN_USER;
 #+end_src
 
+#+RESULTS: get-user-token
+: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNjQ2NTEwODM0LCJleHAiOjE2NDY1MTU4MzR9.VgEP-Pzd_whHnGlygpl1mLoj2-i_ZBuy53AXXEQnMjM
+
 ** users/register
 #+BEGIN_SRC shell :results raw
   curl --location --request POST 'http://localhost:3000/users/register' \
@@ -28,101 +31,182 @@
 #+END_SRC
 
 #+RESULTS:
+{"id":2,"username":"jon@gmail.com","admin":false}
 {"id":2,"username":"skuli@gmail.com","admin":false}
 {"Skilaboð":"Skráning tókst","nafn":"skuli","notendanafn":"skuli@gmail.com"}
 {"id":3,"name":"skuli","username":"skuli@gmail.com","password":"$2b$11$8ycuD51NlNb/7qEEMMLRC.FAitbk0RLdRT7S7epqwfvalXod2WgEW","isadmin":false}
 
-** events/
-#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token
-  curl -L -X POST "http://localhost:3000/events" \
-       -H "Authorization: Bearer $AUTH_TOKEN" \
+** categories/
+#+BEGIN_SRC shell :var AUTH_TOKEN_USER=get-user-token
+  curl -L -X POST "http://localhost:3000/categories" \
+       -H "Authorization: Bearer $AUTH_TOKEN_USER" \
        -H "Content-Type: application/json" \
-       --data '{"id": "1", "name": "Aðalfundur fyrir forritara", "description": "Allir að mæta!"}'
+       --data '{ "title": "Súpapopa"}'
 #+END_SRC
 
 #+RESULTS:
-| id | Aðalfundur fyrir forritara | adalfundur-fyrir-forritara | Allir að mæta! |
+: error":"insufficient authorization
 {"error":"invalid token"}
 {"error":"invalid token"}
 {"error":"invalid token"}
 
+#+BEGIN_SRC shell :var AUTH_TOKEN_ADMIN=get-admin-token
+  curl -L -X POST "http://localhost:3000/categories" \
+       -H "Authorization: Bearer $AUTH_TOKEN_ADMIN" \
+       -H "Content-Type: application/json" \
+       --data '{ "title": "Súpasip"}'
+#+END_SRC
+
+#+RESULTS:
+
+** cart/:cartid
+#+BEGIN_SRC shell :var AUTH_TOKEN_ADMIN=get-admin-token :results raw
+  curl -L -X POST "Http://localhost:3000/cart/c75a4f3c-083d-4805-b6ce-b990d044db47" \
+       -H "Content-Type: application/json" \
+       --data '{"productId": 21, "amount": 3}'
+#+END_SRC
+
+#+RESULTS:
+null
+null
+null
+null
+null
+null
+{"id":"c75a4f3c-083d-4805-b6ce-b990d044db47","lines":[{"title":"Marinara","price":1590,"productid":1,"amount":2},{"title":"Margherita","price":1990,"productid":2,"amount":1},{"title":"Patate","price":2390,"productid":3,"amount":3}],"total":12340}
 
 * get
 ** users/
 
-#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token
+#+BEGIN_SRC shell :var AUTH_TOKEN_ADMIN=get-admin-token
    curl -L -X GET "http://localhost:3000/users/"\
-        -H "Authorization: Bearer $AUTH_TOKEN"\
+        -H "Authorization: Bearer $AUTH_TOKEN_ADMIN"\
         -H "Content-Type: application/json"
 #+END_SRC
 
 #+RESULTS:
-| username":"jon@gmail.com | username":"unnur@gmail.com |
+: error":"Not found
 
 ** users/:id
 
-#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token
-  curl -L -X GET "http://localhost:3000/users/1" \
-       -H "Authorization: Bearer $AUTH_TOKEN" \
+#+BEGIN_SRC shell :var AUTH_TOKEN_ADMIN=get-admin-token
+  curl -L -X GET "http://localhost:3000/users/2" \
+       -H "Authorization: Bearer $AUTH_TOKEN_ADMIN" \
        -H "Content-Type: application/json"
 #+END_SRC
 
 #+RESULTS:
-| id | admin | $2a$11$pgj3.zySyFOvIQEpD7W6Aund1Tw.BFarXxgLJxLbrzIv/4Nteisii | admin:true} |
+| id | jon@gmail.com | $2b$11$qjPopjago8sXKWhCUC9SYeV4SH22U9dhBPJLo6hx8XaA2orngTRmC | admin:false} |
 
 ** users/me
-#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token
+#+BEGIN_SRC shell :var AUTH_TOKEN_USER=get-user-token
   curl --location --request GET "http://localhost:3000/users/me" \
-       -H "Authorization: Bearer $AUTH_TOKEN" \
+       -H "Authorization: Bearer $AUTH_TOKEN_USER" \
+       -H "Content-Type: application/json"
+#+END_SRC
+
+#+RESULTS:
+| id | jon@gmail.com | admin:false} |
+
+
+#+BEGIN_SRC shell :var AUTH_TOKEN_ADMIN=get-admin-token
+  curl --location --request GET "http://localhost:3000/users/me" \
+       -H "Authorization: Bearer $AUTH_TOKEN_ADMIN" \
        -H "Content-Type: application/json"
 #+END_SRC
 
 #+RESULTS:
 | id | admin | admin:true} |
 
-** events/id
-#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token
-  curl --location --request GET "http://localhost:3000/events/1" \
-       -H "Authorization: Bearer $AUTH_TOKEN" \
-       -H "Content-Type: application/json"
-#+END_SRC
-
-#+RESULTS:
-| id | userid:1 | Forritarahittingur í febrúar | forritarahittingur-i-februar | Forritarar hittast í febrúar og forrita saman eitthvað frábært. | 2022-03-01T00:00:00.000Z | 2022-03-01T00:00:00.000Z |
-
-** events
+** menu
 
 #+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token :results raw
-  curl --location --request GET "Http://localhost:3000/events/" \
-       -H "Authorization: Bearer $AUTH_TOKEN" \
+  curl -L -X GET "Http://localhost:3000/menu" \
        -H "Content-Type: application/json"
 #+END_SRC
 
 #+RESULTS:
-[{"id":1,"name":"Forritarahittingur í febrúar","slug":"forritarahittingur-i-februar","description":"Forritarar hittast í febrúar og forrita saman eitthvað frábært.","created":"2022-03-01T00:00:00.000Z","updated":"2022-03-01T00:00:00.000Z"},{"id":2,"name":"Hönnuðahittingur í mars","slug":"honnudahittingur-i-mars","description":"Spennandi hittingur hönnuða í Hönnunarmars.","created":"2022-03-01T00:00:00.000Z","updated":"2022-03-01T00:00:00.000Z"},{"id":4,"name":"Aðalfundur fyrir forritara","slug":"adalfundur-fyrir-forritara","description":"Allir að mæta!","created":"2022-03-01T00:00:00.000Z","updated":"2022-03-01T00:00:00.000Z"},{"id":5,"name":"Aðalfundur fyrir forritara","slug":"adalfundur-fyrir-forritara","description":"Allir að mæta!","created":"2022-03-02T00:00:00.000Z","updated":"2022-03-02T00:00:00.000Z"}]
+
+
+** categories
+
+#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token :results raw
+  curl -L -X GET "Http://localhost:3000/categories" \
+       -H "Content-Type: application/json"
+#+END_SRC
+
+#+RESULTS:
+
+** cart/:cartid
+#+BEGIN_SRC shell :var AUTH_TOKEN_ADMIN=get-admin-token :results raw
+  curl -L -X GET "Http://localhost:3000/cart/c75a4f3c-083d-4805-b6ce-b990d044db47" \
+       -H "Content-Type: application/json"
+#+END_SRC
+
+#+RESULTS:
+{"id":"c75a4f3c-083d-4805-b6ce-b990d044db47","lines":[{"title":"Marinara","price":1590,"productid":1,"amount":2},{"title":"Margherita","price":1990,"productid":2,"amount":1},{"title":"Patate","price":2390,"productid":3,"amount":3},{"title":"Kranabjór","price":990,"productid":21,"amount":3}],"total":15310}
+{"id":"c75a4f3c-083d-4805-b6ce-b990d044db47","lines":[{"title":"Marinara","price":1590,"productid":1,"amount":2},{"title":"Margherita","price":1990,"productid":2,"amount":1},{"title":"Patate","price":2390,"productid":3,"amount":3}],"total":12340}
+{"id":"c75a4f3c-083d-4805-b6ce-b990d044db47","lines":[{"title":"Marinara","price":1590,"productid":1,"amount":2},{"title":"Margherita","price":1990,"productid":2,"amount":1},{"title":"Patate","price":2390,"productid":3,"amount":3}],"total":"[object Object]19907170"}
+{"id":"c75a4f3c-083d-4805-b6ce-b990d044db47","lines":[{"title":"Marinara","price":1590,"productid":1,"amount":2},{"title":"Margherita","price":1990,"productid":2,"amount":1},{"title":"Patate","price":2390,"productid":3,"amount":3}],"total":"[object Object]19907170"}
+{"id":"c75a4f3c-083d-4805-b6ce-b990d044db47","lines":[{"title":"Marinara","price":1590,"productid":1,"amount":2},{"title":"Margherita","price":1990,"productid":2,"amount":1},{"title":"Patate","price":2390,"productid":3,"amount":3}],"total":"[object Object]19907170"}
+[{"title":"Marinara","price":1590,"productid":1,"amount":2},{"title":"Margherita","price":1990,"productid":2,"amount":1},{"title":"Patate","price":2390,"productid":3,"amount":3}]
+[{"title":"Marinara","price":1590,"productid":1,"amount":2},{"title":"Margherita","price":1990,"productid":2,"amount":1},{"title":"Patate","price":2390,"productid":3,"amount":3}]
+[{"title":"Marinara","price":1590,"productid":1,"amount":2},{"title":"Margherita","price":1990,"productid":2,"amount":1},{"title":"Patate","price":2390,"productid":3,"amount":3}]
+[{"title":"Marinara","price":1590,"productid":1,"amount":2},{"title":"Margherita","price":1990,"productid":2,"amount":1},{"title":"Patate","price":2390,"productid":3,"amount":3}]
+[{"title":"Marinara","price":1590,"description":"Tómatsósa, óreganó, hvítlauksolía","productid":1},{"title":"Margherita","price":1990,"description":"Tómatsósa, mozzarella, basil","productid":2},{"title":"Patate","price":2390,"description":"Kartöflur, mozzarella, óreganó","productid":3}]
+null
+null
+null
+null
+null
+null
+null
+null
+null
+[{"productid":1,"basketid":"c75a4f3c-083d-4805-b6ce-b990d044db47","amount":null},{"productid":2,"basketid":"c75a4f3c-083d-4805-b6ce-b990d044db47","amount":null},{"productid":3,"basketid":"c75a4f3c-083d-4805-b6ce-b990d044db47","amount":null}]
+null
+null
+null
+null
+null
 
 * patch
-** events/:id
+** categories/:id
 
-#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token :results raw
-  curl -X PATCH "http://localhost:3000/events/2" \
-       -H "Authorization: Bearer $AUTH_TOKEN" \
+#+BEGIN_SRC shell :var AUTH_TOKEN_ADMIN=get-admin-token :results raw
+  curl -X PATCH "http://localhost:3000/categories/6" \
+       -H "Authorization: Bearer $AUTH_TOKEN_ADMIN" \
        -H "Content-Type: application/json" \
-       -d '{ "description": "Ókeypis bjór!!"}'
+       -d '{ "title": "Aperitivo"}'
 #+END_SRC
 
 #+RESULTS:
+{"error":"Not found"}
+{"error":"Not found"}
+{"error":"Not found"}
 {"error":"Ekki tókst að uppfæru viðburðinn"}
 {"update":{"id":6,"userid":2,"name":"Aðalfundur fyrir forritara","slug":"adalfundur-fyrir-forritara","description":"Ókeypis bjór!!"}}
 
 * delete
-** events/:id
+** categories/:id
 
-#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token :results raw
-  curl -X DELETE "http://localhost:3000/events/2" \
-       -H "Authorization: Bearer $AUTH_TOKEN" \
+#+BEGIN_SRC shell :var AUTH_TOKEN_ADMIN=get-admin-token :results raw
+  curl -X DELETE "http://localhost:3000/categories/3" \
+       -H "Authorization: Bearer $AUTH_TOKEN_ADMIN" \
        -H "Content-Type: application/json"
 #+END_SRC
 
 #+RESULTS:
-: {"error":"Ekki tókst að eiða viðburðinn"}
+null
+null
+null
+null
+{"error":"Not found"}
+
+** cart/:cartid
+#+BEGIN_SRC shell :var AUTH_TOKEN_ADMIN=get-admin-token :results raw
+  curl -X DELETE "Http://localhost:3000/cart/c75a4f3c-083d-4805-b6ce-b990d044db47" \
+       -H "Content-Type: application/json"
+#+END_SRC
+
+#+RESULTS:
