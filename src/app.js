@@ -32,6 +32,9 @@ app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(passport.initialize());
 
+// TODO tengja locals við notenda auðkenningu
+app.locals.isAdmin = true;
+
 app.get('/', (req, res) => {
   res.json({
     test:'tests'

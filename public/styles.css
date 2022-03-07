@@ -1,0 +1,62 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+:root {
+  --color-paperwhite: #ffe;
+  --color-error: #a77;
+  --color-accent: #aa6;
+}
+
+html {
+  background-color: var(--color-paperwhite);
+
+  box-sizing: border-box;
+
+  font-family: 'Georgia', serif;
+  font-size: 20px;
+}
+main {
+  display: grid;
+  margin: auto;
+  max-width: 1400px;
+}
+
+ul,li {
+  list-style: none;
+}
+
+img {
+  max-width:10%;
+  height: 100%;
+}
+
+.menuWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.menuItemWrapper {
+  display:  flex;
+  max-height: 10%;
+  padding: 2px;
+}
+
+.postProductForm {
+  display: flex;
+  flex-wrap: wrap;
+  padding-bottom: 3%;
+}
+
+.inputLabelWrapper {
+  display: flex;
+  flex-direction: column;
+  padding: 1%;
+}

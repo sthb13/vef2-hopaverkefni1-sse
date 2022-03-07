@@ -1,20 +1,43 @@
 <%- include('header') -%>
 
-<% menu.forEach((row) => {%>
-	<div class="menuItemWrapper">
-		<p><%- row.title -%></p>
-		<p><%- row.price -%></p>
-	</div>
-<% }) %>
-
-
-
-
-
-
-
-<%- -%>
-<%- -%>
+<% if(locals.isAdmin){ %>
+	<form action="/menu" method="post" class="postProductForm">
+		<div class="inputLabelWrapper">
+			<label for="title">Gefðu vörunni titil:</label>
+			<input type="text" name="title">
+		</div>
+		<div class="inputLabelWrapper">
+			<label for="price">Gefðu vörunni verð:</label>
+			<input type="number" name="price">
+		</div>
+		<div class="inputLabelWrapper">
+			<label for="description">Gefðu vörunni lýsingu:</label>
+			<input type="text" name="description">
+		</div>
+		<div class="inputLabelWrapper">
+			<label for="img">Hlekkur á mynd:</label>
+			<input type="text" name="img">
+		</div>
+		<div class="inputLabelWrapper">
+			<label for="category">Í hvaða flokki er varan:</label>
+			<input type="text" name="category">
+		</div>
+	</form>
+<% } %>
+<% %>
+<ul class="menuWrapper">
+	<% menu.forEach((row) => {%>
+		<li class="menuListItem">
+		<div class="menuItemWrapper">
+			<img src="https://bigseventravel.com/wp-content/uploads/2019/09/Screenshot-2019-09-15-at-19.51.27.png">
+			<p><%- row.title -%></p>
+			<p><%- row.description -%></p>
+			<p><%- row.price -%></p>
+		</div>
+		</li>
+	<% }) %>
+</ul>
+<% %>
 <%- -%>
 
 <%- include('footer') -%>
