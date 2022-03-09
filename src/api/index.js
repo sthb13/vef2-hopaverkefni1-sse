@@ -17,7 +17,7 @@ async function menuRoute(req, res){
   const menu = await findProducts();
 
   if(!menu) return res.status(404).json({error: 'No menus found'});
-  return res.render('menu',{title: "Matseðill", menu});
+  return res.status(200).json(menu);
 }
 
 

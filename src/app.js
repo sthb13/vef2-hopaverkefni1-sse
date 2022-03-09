@@ -10,6 +10,7 @@ import { router as apiRouter } from './api/index.js';
 
 dotenv.config();
 const { PORT: port = 3000,
+        SESSION_SECRET: sessionSecret,
         DATABASE_URL: connectionString, } = process.env;
 
 if (!connectionString) {
@@ -30,10 +31,8 @@ app.set('view engine', 'ejs');
 
 // Notum JSON middleware til að geta tekið við JSON frá client
 app.use(express.json());
-app.use(passport.initialize());
 
-// TODO tengja locals við notenda auðkenningu
-app.locals.isAdmin = true;
+app.use(passport.initialize());
 
 app.get('/', (req, res) => {
   res.json({

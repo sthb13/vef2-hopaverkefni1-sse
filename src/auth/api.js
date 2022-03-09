@@ -39,7 +39,9 @@ async function loginRoute(req, res) {
   if (passwordIsCorrect) {
     const payload = { id: user.id };
     const token = jwt.sign(payload, jwtOptions.secretOrKey, tokenOptions);
+    delete user.password;
     return res.json({
+      user,
       token,
       expiresIn: tokenOptions.expiresIn,
     });
