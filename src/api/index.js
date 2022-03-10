@@ -2,22 +2,33 @@ import express from 'express';
 
 import { requireAuthentication, requireAdmin } from '../auth/passport.js';
 import { catchErrors } from '../utils/errorsHandler.js';
-
+import { setPagenumber, pagingInfo } from '../utils/utils.js';
+import { total } from '../db.js';
 import { findProducts, createProduct } from './menu.js';
 import { findCategories, createCategory, updateCategory, deleteCategory } from './category.js';
 import { findCartById, addProductToCartById, deleteCartById } from './cart.js';
 
 export const router = express.Router();
 
+const PAGE_SIZE = 10;
+
 function returnResource(req, res) {
   return res.json(req.resource);
 }
 
 async function menuRoute(req, res){
-  const menu = await findProducts();
-
+  let { page = 1 } = req.query;
+  page = setPagenumber(page);
+  const offset = (page - 1) * PAGE_SIZE;
+  const menu = await findProducts(PAGE_SIZE, offset);
+  const totalProducts = parseInt(await total());
+  const paging = await pagingInfo(
+    {
+      page, offset, count: totalProducts, menuLength: menu.length, PAGE_SIZE
+    },
+  );
   if(!menu) return res.status(404).json({error: 'No menus found'});
-  return res.status(200).json(menu);
+  return res.status(200).json(paging);
 }
 
 

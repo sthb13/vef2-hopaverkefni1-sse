@@ -1,10 +1,11 @@
 import {conditionalUpdate, query} from'../db.js';
 
-export async function findProducts(){
-  const q = `SELECT * FROM products ORDER BY created DESC`;
+export async function findProducts(limit, offset){
+  const q = `SELECT * FROM products ORDER BY created DESC
+             LIMIT $1 OFFSET $2`;
 
   try{
-    const result = await query(q);
+    const result = await query(q, [limit, offset]);
     if(result.rowCount > 0) return result.rows;
   } catch (e) {
     console.error('Engar vörur fundust');

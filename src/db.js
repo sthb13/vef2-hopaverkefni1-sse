@@ -139,3 +139,14 @@ export async function addProduct(title, price, description, img, categoryID) {
   }
   return null;
 }
+export async function total() {
+try {
+    const result = await query(
+      `SELECT COUNT(*) AS count FROM products`);
+    return (result.rows && result.rows[0] && result.rows[0].count) || 0;
+  } catch (e) {
+    console.error('Error counting products', e);
+  }
+
+  return 0;
+}
