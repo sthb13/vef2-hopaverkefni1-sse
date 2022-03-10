@@ -24,7 +24,7 @@ async function menuRoute(req, res){
   const totalProducts = parseInt(await total());
   const paging = await pagingInfo(
     {
-      page, offset, count: totalProducts, menuLength: menu.length, PAGE_SIZE
+      page, offset, count: totalProducts, listLength: menu.length, PAGE_SIZE, menu
     },
   );
   if(!menu) return res.status(404).json({error: 'No menus found'});
