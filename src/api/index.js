@@ -4,7 +4,7 @@ import { requireAuthentication, requireAdmin } from '../auth/passport.js';
 import { catchErrors } from '../utils/errorsHandler.js';
 import { setPagenumber, pagingInfo } from '../utils/utils.js';
 import { total } from '../db.js';
-import { findProducts, createProduct } from './menu.js';
+import { findProducts, createProduct, getProductById, updateProduct, deleteProduct } from './menu.js';
 import { findCategories, createCategory, updateCategory, deleteCategory } from './category.js';
 import { findCartById, addProductToCartById, deleteCartById } from './cart.js';
 
@@ -31,6 +31,31 @@ async function menuRoute(req, res){
   return res.status(200).json(paging);
 }
 
+async function getProductRoute(req, res){
+  const { id } = req.params;
+  const result = await getProductById(id);
+  if(!result) return res.status(404).json({error: 'No product found'});
+  return res.status(200).json(result);
+}
+
+async function addProductRoute(req, res){
+  const { title, price, description, img, categoryID } = req.body;
+  const result = await createProduct(title, price, description, img, categoryID);
+  return res.status(201).json(result);
+}
+
+async function patchProductRoute(req, res){
+  const { id } = req.params;
+  const { title, price, description, img, categoryID } = req.body;
+  const result = await updateProduct(id, title, price, description, img, categoryID)
+  return res.status(201).json(result);
+}
+
+async function deleteProductRoute(req, res){
+  const { id } = req.params;
+  const result = await deleteProduct(id);
+  return res.status(200).json(result);
+}
 
 async function categoriesRoute(req, res){
   const categories = await findCategories();
@@ -93,6 +118,14 @@ async function deleteCartRoute(req,res){
 }
 
 router.get('/menu', catchErrors(menuRoute));
+router.post('/menu', requireAdmin, catchErrors(addProductRoute));
+
+router.get('/menu/:id', catchErrors(getProductRoute));
+router.patch('/menu/:id', requireAdmin, catchErrors(patchProductRoute));
+router.delete('/menu/:id', requireAdmin, catchErrors(deleteProductRoute));
+//router.get('')
+
+
 router.get('/categories', catchErrors(categoriesRoute));
 //TODO validation
 router.post('/categories', requireAdmin, catchErrors(addCategoryRoute));
