@@ -1,6 +1,9 @@
 -- Lykilorð: "123"
 INSERT INTO users (username, password, admin) VALUES ('admin', '$2a$11$pgj3.zySyFOvIQEpD7W6Aund1Tw.BFarXxgLJxLbrzIv/4Nteisii', true);
 
+INSERT INTO users (username, password) VALUES ('user', '$2a$11$pgj3.zySyFOvIQEpD7W6Aund1Tw.BFarXxgLJxLbrzIv/4Nteisii');
+
+
 INSERT INTO category (title) VALUES ('Pizze Fritte');
 INSERT INTO category (title) VALUES ('PIzze Bianche');
 INSERT INTO category (title) VALUES ('Pizze Rosse');
