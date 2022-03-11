@@ -1,8 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import { describe, expect, test } from '@jest/globals';
-import {
-  postAndParse
-} from './utils.js';
+import { postAndParse } from './utils.js';
 
 
 describe('/users', () => {
@@ -10,7 +8,7 @@ describe('/users', () => {
     const data = null;
     const { status } = await postAndParse('/users/login', data);
 
-    expect(status).toBe(401);
+    expect(status).toBe(400);
   });
 
 });

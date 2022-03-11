@@ -1,12 +1,15 @@
 import express from 'express';
-
-import { requireAuthentication, requireAdmin } from '../auth/passport.js';
-import { catchErrors } from '../utils/errorsHandler.js';
-import { setPagenumber, pagingInfo } from '../utils/utils.js';
+import { requireAdmin } from '../auth/passport.js';
 import { total } from '../db.js';
-import { findProducts, createProduct, getProductById, updateProduct, deleteProduct } from './menu.js';
-import { findCategories, createCategory, updateCategory, deleteCategory } from './category.js';
-import { findCartById, addProductToCartById, deleteCartById } from './cart.js';
+import { catchErrors } from '../utils/errorsHandler.js';
+import { pagingInfo, setPagenumber } from '../utils/utils.js';
+import { addProductToCartById, deleteCartById, findCartById } from './cart.js';
+import { createCategory, deleteCategory, findCategories, updateCategory } from './category.js';
+import {
+  createProduct, deleteProduct,
+  findProducts, findProductsByCategory, getProductById, updateProduct
+} from './menu.js';
+
 
 export const router = express.Router();
 
@@ -17,11 +20,20 @@ function returnResource(req, res) {
 }
 
 async function menuRoute(req, res){
+  const { category }= req.query;
   let { page = 1 } = req.query;
   page = setPagenumber(page);
   const offset = (page - 1) * PAGE_SIZE;
-  const menu = await findProducts(PAGE_SIZE, offset);
-  const totalProducts = parseInt(await total());
+
+  let menu;
+  if(category){
+    menu = await findProductsByCategory(PAGE_SIZE, offset,category);
+  }
+  else{
+    menu = await findProducts(PAGE_SIZE, offset);
+  }
+
+  const totalProducts = parseInt(await total(), 10);
   const paging = await pagingInfo(
     {
       page, offset, count: totalProducts, listLength: menu.length, PAGE_SIZE, menu
@@ -117,22 +129,26 @@ async function deleteCartRoute(req,res){
 
 }
 
+
+
 router.get('/menu', catchErrors(menuRoute));
 router.post('/menu', requireAdmin, catchErrors(addProductRoute));
-
 router.get('/menu/:id', catchErrors(getProductRoute));
 router.patch('/menu/:id', requireAdmin, catchErrors(patchProductRoute));
 router.delete('/menu/:id', requireAdmin, catchErrors(deleteProductRoute));
-//router.get('')
+
+
 
 
 router.get('/categories', catchErrors(categoriesRoute));
-//TODO validation
+// TODO validation
 router.post('/categories', requireAdmin, catchErrors(addCategoryRoute));
 router.patch('/categories/:id', requireAdmin, catchErrors(updateCategoryRoute));
 router.delete('/categories/:id', requireAdmin, catchErrors(deleteCategoryRoute));
 router.get('/cart/:cartid', catchErrors(cartRoute));
-//TODO validation
+// TODO validation
 router.post('/cart/:cartid', catchErrors(addToCartRoute));
-//TODO virkar ekki, references to basketitems
+// TODO virkar ekki, references to basketitems
 router.delete('/cart/:cartid', catchErrors(deleteCartRoute));
+
+
