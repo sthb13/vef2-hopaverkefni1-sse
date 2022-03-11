@@ -1,7 +1,7 @@
-import {conditionalUpdate, query} from'../db.js';
+import { query } from '../db.js';
 
 export async function findCategories(){
-  const q = `SELECT * FROM category`;
+  const q = 'SELECT * FROM category';
 
   try{
     const result = await query(q);
@@ -38,9 +38,9 @@ export async function updateCategory(id, title){
   return null;
 }
 
-//TODO virkar ekki útaf tengingu við products
+// TODO virkar ekki útaf tengingu við products
 export async function deleteCategory(id){
-  const q = `DELETE FROM category WHERE id = $1`;
+  const q = 'DELETE FROM category WHERE id = $1';
   try{
     const result = await query (q, [id]);
     return result.rows[0];

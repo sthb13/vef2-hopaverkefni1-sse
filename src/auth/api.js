@@ -1,24 +1,21 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-
-import { jwtOptions, tokenOptions, requireAuthentication } from './passport.js';
 import {
-  comparePasswords, createUser,
-  findUserByUsername, findUserById,
-  updateUser,
+  comparePasswords, createUser, findUserById, findUserByUsername, updateAdmin, updateUser
 } from '../api/users.js';
-
 import { catchErrors } from '../utils/errorsHandler.js';
-// import { logger } from '../utils/logger.js';
-
-import { xssSanitizationUsername,
-  sanitizationMiddlewareUsername,
-  usernameDoesNotExistValidator,
-  validationUsernameAndPass,
-  usernameAndPaswordValidValidator,
-  atLeastOneBodyValueValidator
-} from '../validation/validators.js';
 import { validationCheck } from '../validation/helpers.js';
+// import { logger } from '../utils/logger.js';
+import {
+  atLeastOneBodyValueValidator,
+  sanitizationMiddlewareUsername,
+  usernameAndPaswordValidValidator,
+  usernameDoesNotExistValidator,
+  validationUsernameAndPass, xssSanitizationUsername
+} from '../validation/validators.js';
+import { jwtOptions, requireAdmin, requireAuthentication, tokenOptions } from './passport.js';
+
+
 /**
  * Skilgreinir API fyrir nýskráningu, innskráningu notanda, ásamt því að skila
  * upplýsingum um notanda og uppfæra þær.
@@ -60,7 +57,7 @@ async function registerRoute(req, res) {
   return res.status(201).json(result);
 }
 
-async function userRoute(req,res){
+async function specificUserRoute(req,res){
   const { id } = req.params;
 
   const user = await findUserById(id);
@@ -69,6 +66,7 @@ async function userRoute(req,res){
     return res.status(404).json({ error: 'User not found'});
   }
 
+  delete user.password;
   return res.status(200).json(user);
 }
 
@@ -128,6 +126,31 @@ async function updateCurrentUserRoute(req, res) {
   return res.status(200).json(updatedUser);
 }
 
+async function specificUserRoutePatch(req,res){
+  const { user: { id: authUser } = {} } = req;
+  const { id} = req.params;
+  const { admin } = req.body;
+
+  if (Number(authUser)=== Number(id)){
+    return res.status(400).json({ error: 'can not changes your side' });
+  }
+
+  const user = await findUserById(id);
+  if(!user) {
+    return res.status(404).json({ error: 'User not found'});
+  }
+
+  const result = await updateAdmin(id, admin);
+
+  if(!result){
+    return res.status(404).json({ error: 'admin can only be true or false'});
+  }
+
+  delete result.password;
+
+  return res.status(200).json(result);
+}
+
 router.post(
   '/users/login',
   validationUsernameAndPass,
@@ -148,6 +171,7 @@ router.post(
   catchErrors(registerRoute),
 );
 
+
 router.get(
   '/users/me',
   requireAuthentication,
@@ -156,9 +180,10 @@ router.get(
 
 router.get(
   '/users/:id',
-  requireAuthentication,
-  catchErrors(userRoute),
+  requireAdmin,
+  catchErrors(specificUserRoute),
 );
+
 
 router.patch(
   '/users/me',
@@ -166,4 +191,11 @@ router.patch(
   atLeastOneBodyValueValidator(['username', 'password']),
   validationCheck,
   catchErrors(updateCurrentUserRoute)
+);
+
+router.patch(
+  '/users/:id',
+  requireAuthentication,
+  requireAdmin,
+  catchErrors(specificUserRoutePatch)
 );

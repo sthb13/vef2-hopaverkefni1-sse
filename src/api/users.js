@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
-import xss from 'xss';
 import dotenv from 'dotenv';
-import {isString, isInt} from '../utils/utils.js';
-import {conditionalUpdate, query} from'../db.js';
+import xss from 'xss';
+import { conditionalUpdate, query } from '../db.js';
+import { isInt, isString } from '../utils/utils.js';
 
 dotenv.config();
 
@@ -118,3 +118,27 @@ export async function updateUser(id, username, password) {
 
   return updatedUser;
 }
+
+
+export async function updateAdmin(user, isAdmin) {
+  const q = `
+    UPDATE users
+    SET admin=$2
+    WHERE id = $1
+    RETURNING *
+    `;
+    try {
+      const result = await query(q, [user, isAdmin]);
+      if (result.rowCount === 1) {
+        return result.rows[0];
+      }
+    } catch (e) {
+      console.error('Gat ekki búið til notanda');
+    }
+
+    return null;
+}
+
+
+
+

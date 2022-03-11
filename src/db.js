@@ -1,5 +1,5 @@
-import { readFile } from 'fs/promises';
 import dotenv from 'dotenv';
+import { readFile } from 'fs/promises';
 import pg from 'pg';
 
 const SCHEMA_FILE = './sql/schema.sql';
@@ -111,12 +111,12 @@ export async function conditionalUpdate(table, id, fields, values) {
 
 export async function getEveryProductByDate() {
   const q = `
-    SELECT * 
+    SELECT *
     FROM products
     ORDER BY created ASC
     `;
   const result = await query(q);
-  if (result && result.rowCount != 0) {
+  if (result && result.rowCount !== 0) {
     return result.rows;
   }
   return null;
@@ -129,7 +129,7 @@ export async function addProduct(title, price, description, img, categoryID) {
       products (title, price, description, img, categoryID)
     VALUES
       ($1, $2, $3, $4, $5)
-    RETURNING 
+    RETURNING
       title, price, description, img, categoryID
     `;
   const result = await query(q, values);
@@ -142,7 +142,7 @@ export async function addProduct(title, price, description, img, categoryID) {
 export async function total() {
 try {
     const result = await query(
-      `SELECT COUNT(*) AS count FROM products`);
+      'SELECT COUNT(*) AS count FROM products');
     return (result.rows && result.rows[0] && result.rows[0].count) || 0;
   } catch (e) {
     console.error('Error counting products', e);
