@@ -15,6 +15,10 @@ npm run lint  # athugar eslint
 npm run dev # þá keyrir þetta á http://localhost:3000/
 ```
 
+## Heroku
+
+[Likur](https://vef2-hopaverkefni1-sse.herokuapp.com/) á Heroku síðu.
+
 ## Test
 
 Til þess að keyra test þarf að vera með tvo terminal glugga opna
@@ -28,16 +32,33 @@ npm run dev  # keyra á localhost 3000
 npm run test  # staðfestir virkni með testum
 ```
 
+- POST /users/login -> tekur við gögnum
+- POST /users/register -> tekur við gögnum
+- GET /users/1 -> krefst auðkenningar
+- GET /menu
+- POST /menu
+- GET /menu/:id
+- PATCH /menu/:id -> krefst auðkenningar og tekur við gögnum
+- DELETE /menu/:id
+- GET /categories
+
+ps. mikilvægt er að keyra npm run build áður en gerð eru test.
+
 ---
 
 Stjórnandi skráður í gagnagrunn:
 
-username : admin
-password : 123
+- username : admin
+- password : 123
 
 ---
-## Heroku
-https://vef2-hopaverkefni1-sse.herokuapp.com/
+
+## Hópmeðlimir
+
+- Eva Margrét Hrólfsdóttir ( emh33 )
+- Skúli Þór Bjarnason ( sthb13 )
+- Sturla Freyr Magnússon (Stulli888)
+
 ---
 
 [Kynning í fyrirlestri](https://youtu.be/W0k01_KRE4I).
