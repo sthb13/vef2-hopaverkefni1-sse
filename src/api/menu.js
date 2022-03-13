@@ -27,6 +27,22 @@ export async function findProductsByCategory(limit, offset, category){
   return null;
 }
 
+export async function searchProducts(limit, offset, search){
+  const s = ("%"+search+"%");
+  const q = `SELECT * FROM products
+            WHERE LOWER(title) LIKE $3
+            OR LOWER(description) LIKE $3
+            ORDER BY created DESC
+            LIMIT $1 OFFSET $2`;
+  try{
+    const result = await query(q, [limit, offset, s]);
+    if(result.rowCount > 0) return result.rows;
+  } catch (e) {
+    console.error('Engar vörur fundust',e);
+  }
+  return null;
+}
+
 export async function createProduct(title, price, description, img, categoryId){
   const q = `INSERT INTO
                products (title, price, description, img, categoryID)

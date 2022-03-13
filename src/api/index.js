@@ -7,7 +7,7 @@ import { addProductToCartById, deleteCartById, findCartById } from './cart.js';
 import { createCategory, deleteCategory, findCategories, updateCategory } from './category.js';
 import {
   createProduct, deleteProduct,
-  findProducts, findProductsByCategory, getProductById, updateProduct
+  findProducts, findProductsByCategory, getProductById, updateProduct, searchProducts
 } from './menu.js';
 
 
@@ -20,7 +20,7 @@ function returnResource(req, res) {
 }
 
 async function menuRoute(req, res){
-  const { category }= req.query;
+  const { category,search }= req.query;
   let { page = 1 } = req.query;
   page = setPagenumber(page);
   const offset = (page - 1) * PAGE_SIZE;
@@ -28,6 +28,8 @@ async function menuRoute(req, res){
   let menu;
   if(category){
     menu = await findProductsByCategory(PAGE_SIZE, offset,category);
+  }else if(search){
+    menu = await searchProducts(PAGE_SIZE, offset, search);
   }
   else{
     menu = await findProducts(PAGE_SIZE, offset);
@@ -150,5 +152,3 @@ router.get('/cart/:cartid', catchErrors(cartRoute));
 router.post('/cart/:cartid', catchErrors(addToCartRoute));
 // TODO virkar ekki, references to basketitems
 router.delete('/cart/:cartid', catchErrors(deleteCartRoute));
-
-

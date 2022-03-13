@@ -127,6 +127,15 @@ null
 
 #+RESULTS:
 
+** menu
+
+#+BEGIN_SRC shell :var AUTH_TOKEN=get-admin-token :results raw
+  curl -L -X GET "Http://localhost:3000/menu?search=sal" \
+       -H "Content-Type: application/json"
+#+END_SRC
+
+#+RESULTS:
+{"page":1,"total":22,"totalPages":3,"menu":[{"id":12,"title":"Fritto Salame","price":2390,"description":"Djúpsteikt Margherita með pepperóni","img":"todo","categoryid":1,"created":"2022-03-02T20:30:52.561Z","lastedit":"2022-03-02T20:30:52.561Z"},{"id":11,"title":"Salame","price":2390,"description":"Margherita með pepperóní","img":"todo","categoryid":3,"created":"2022-03-02T20:20:50.737Z","lastedit":"2022-03-02T20:20:50.737Z"}],"first":true,"last":true,"hasPrev":false,"hasNext":false,"prevUrl":"/?page=0","nextUrl":"/?page=2"}
 
 ** categories
 
