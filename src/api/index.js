@@ -57,6 +57,14 @@ async function deleteProductRoute(req, res){
   return res.status(200).json(result);
 }
 
+async function getOrdersRoute(req, res){
+
+}
+
+async function postOrdersRoute(req, res){
+  
+}
+
 async function categoriesRoute(req, res){
   const categories = await findCategories();
 
@@ -72,6 +80,7 @@ async function addCategoryRoute(req, res){
 
   return res.status(201).json(result);
 }
+
 
 async function updateCategoryRoute(req,res){
   const { title = '' } = req.body;
@@ -123,9 +132,9 @@ router.post('/menu', requireAdmin, catchErrors(addProductRoute));
 router.get('/menu/:id', catchErrors(getProductRoute));
 router.patch('/menu/:id', requireAdmin, catchErrors(patchProductRoute));
 router.delete('/menu/:id', requireAdmin, catchErrors(deleteProductRoute));
-//router.get('')
 
-
+router.get('/orders', requireAdmin, catchErrors(getOrdersRoute));
+router.post('/orders', catchErrors(postOrdersRoute));
 router.get('/categories', catchErrors(categoriesRoute));
 //TODO validation
 router.post('/categories', requireAdmin, catchErrors(addCategoryRoute));
