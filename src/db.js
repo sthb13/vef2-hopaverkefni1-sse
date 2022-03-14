@@ -133,7 +133,6 @@ export async function addProduct(title, price, description, img, categoryID) {
       title, price, description, img, categoryID
     `;
   const result = await query(q, values);
-  console.log(result.rows);
   if (result){
     return result.rows;
   }

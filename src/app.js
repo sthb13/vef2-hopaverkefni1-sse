@@ -2,10 +2,10 @@ import dotenv from 'dotenv';
 import express from 'express';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import { router as apiRouter } from './api/index.js';
+import { router as registerRouter } from './auth/api.js';
 import passport from './auth/passport.js';
 import { errorHandler, notFoundHandler } from './error.js';
-import { router as registerRouter } from './auth/api.js';
-import { router as apiRouter } from './api/index.js';
 
 
 dotenv.config();

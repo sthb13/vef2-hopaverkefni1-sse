@@ -24,6 +24,7 @@
   "homepage": "https://github.com/sthb13/vef2-hopaverkefni1-sse#readme",
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "cloudinary": "^1.28.1",
     "dotenv": "^16.0.0",
     "dotenv-cli": "^5.0.0",
     "ejs": "^3.1.6",
@@ -33,6 +34,7 @@
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
     "pg": "^8.7.3",
+    "url": "^0.11.0",
     "winston": "^3.6.0",
     "xss": "^1.0.10"
   },
