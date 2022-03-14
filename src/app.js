@@ -33,11 +33,10 @@ app.use(express.json());
 
 app.use(passport.initialize());
 
-app.get('/', (req, res) => {
-  res.json({
-    test:'tests'
-  });
-});
+function availableRoutes(req, res) {
+  res.json(apiRouter.stack);
+}
+app.get('/', availableRoutes);
 
 app.use(registerRouter);
 app.use(apiRouter);

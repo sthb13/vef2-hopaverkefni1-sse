@@ -62,7 +62,8 @@ async function addProductRoute(req, res){
   if(!url){
     res.status(500).end();
   }
-
+  console.log(url);
+  console.log(img);
   const result = await createProduct(title, price, description, url, categoryID);
   return res.status(201).json(result);
 }
@@ -170,8 +171,6 @@ async function deleteCartRoute(req,res){
   return res.status(201).json(result);
 
 }
-
-
 
 router.get('/menu', catchErrors(menuRoute));
 router.post('/menu', requireAdmin, catchErrors(addProductRoute));
