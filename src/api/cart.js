@@ -27,9 +27,9 @@ export async function addProductToCartById(id, productId, amount){
   return null;
 }
 
-//TODO virkar ekki, references to basketitems
+// TODO virkar ekki, references to basketitems
 export async function deleteCartById(id){
-  const q = `DELETE FROM baskets WHERE id = $1`
+  const q = 'DELETE FROM baskets WHERE id = $1'
   try{
     const result = await query (q, [id]);
     return result.rows[0];

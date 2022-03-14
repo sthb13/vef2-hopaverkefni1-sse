@@ -1,13 +1,14 @@
 import express from 'express';
 import { requireAdmin } from '../auth/passport.js';
 import { total } from '../db.js';
+import { getURLForCloudinary } from '../utils/cloudinary.js';
 import { catchErrors } from '../utils/errorsHandler.js';
 import { pagingInfo, setPagenumber } from '../utils/utils.js';
 import { addProductToCartById, deleteCartById, findCartById } from './cart.js';
 import { createCategory, deleteCategory, findCategories, updateCategory } from './category.js';
 import {
   createProduct, deleteProduct,
-  findProducts, findProductsByCategory, getProductById, updateProduct, searchProducts
+  findProducts, findProductsByCategory, getProductById, searchProducts, updateProduct
 } from './menu.js';
 
 
@@ -15,9 +16,9 @@ export const router = express.Router();
 
 const PAGE_SIZE = 10;
 
-function returnResource(req, res) {
+/* function returnResource(req, res) {
   return res.json(req.resource);
-}
+} */
 
 async function menuRoute(req, res){
   const { category,search }= req.query;
@@ -54,14 +55,28 @@ async function getProductRoute(req, res){
 
 async function addProductRoute(req, res){
   const { title, price, description, img, categoryID } = req.body;
-  const result = await createProduct(title, price, description, img, categoryID);
+  // const { path: imagePath } = req.file;   Veit ekki alveg hvernig á að setja inn í cURL
+  //                                         Þannig img er absolute path frá því hvar myndin er.
+  const url = await getURLForCloudinary(img);
+  if(!url){
+    res.status(500).end();
+  }
+
+  const result = await createProduct(title, price, description, url, categoryID);
   return res.status(201).json(result);
 }
 
 async function patchProductRoute(req, res){
   const { id } = req.params;
   const { title, price, description, img, categoryID } = req.body;
-  const result = await updateProduct(id, title, price, description, img, categoryID)
+
+  const url = await getURLForCloudinary(img);
+  if(!url){
+    res.status(500).end();
+  }
+
+
+  const result = await updateProduct(id, title, price, description, url, categoryID)
   return res.status(201).json(result);
 }
 

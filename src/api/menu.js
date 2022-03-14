@@ -28,7 +28,7 @@ export async function findProductsByCategory(limit, offset, category){
 }
 
 export async function searchProducts(limit, offset, search){
-  const s = ("%"+search+"%");
+  const s = (`%${search}%`);
   const q = `SELECT * FROM products
             WHERE LOWER(title) LIKE $3
             OR LOWER(description) LIKE $3
@@ -50,7 +50,7 @@ export async function createProduct(title, price, description, img, categoryId){
              RETURNING id, title, price, description, img, categoryID`;
   try {
     const result = await query(q, [title, price, description, img, categoryId]);
-    console.log('query result: ', result);
+    // console.log('query result: ', result);
     return result.rows[0];
   } catch (e) {
     console.error('Gat ekki búið til vöru');
@@ -69,6 +69,7 @@ export async function getProductById(id){
   } catch (e) {
     console.error('Gat ekki sótt vöru')
   }
+  return null;
 }
 
 export async function updateProduct(id, title, price, description, img, categoryID) {
@@ -83,13 +84,14 @@ export async function updateProduct(id, title, price, description, img, category
     } catch (e) {
       console.error('Gat ekki uppfært vöru')
     }
+    return null;
 }
 
 export async function deleteProduct(id) {
   const q = 'DELETE FROM products WHERE id = $1';
   try {
     const result = await query(q, [id])
-    console.log(result);
+    // console.log(result);
   } catch (e) {
     console.error('Gat ekki eytt vöru')
   }
