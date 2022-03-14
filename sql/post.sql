@@ -41,3 +41,6 @@ INSERT INTO basketitems (productid,basketid,amount) VALUES (2,'c75a4f3c-083d-480
 INSERT INTO basketitems (productid,basketid,amount) VALUES (3,'c75a4f3c-083d-4805-b6ce-b990d044db47',1);
 INSERT INTO basketitems (productid,basketid,amount) VALUES (5,'f4ddef09-cadb-4472-bfa8-152b250a8496',3);
 INSERT INTO basketitems (productid,basketid,amount) VALUES (5,'f4ddef09-cadb-4472-bfa8-152b250a8496',2);
+
+INSERT INTO orders (id, name) VALUES (0,'testOrder');
+INSERT INTO orders (id, name) VALUES (1,'testOrder2');

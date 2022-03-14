@@ -17,13 +17,13 @@ export function setPagenumber(page) {
 }
 
 export async function pagingInfo({
-  page, offset, count, listLength, PAGE_SIZE, menu, baseUrl = '', 
+  page, offset, count, listLength, PAGE_SIZE, items, baseUrl = '', 
 } = {}) {
   return {
     page,
     total: count,
     totalPages: Math.ceil(count / PAGE_SIZE),
-    menu,
+    items,
     first: offset === 0,
     last: listLength < PAGE_SIZE,
     hasPrev: offset > 0,

@@ -1,6 +1,6 @@
 import express from 'express';
 import { requireAdmin } from '../auth/passport.js';
-import { total } from '../db.js';
+import { total, totalOrders } from '../db.js';
 import { getURLForCloudinary } from '../utils/cloudinary.js';
 import { catchErrors } from '../utils/errorsHandler.js';
 import { pagingInfo, setPagenumber } from '../utils/utils.js';
@@ -10,6 +10,7 @@ import {
   createProduct, deleteProduct,
   findProducts, findProductsByCategory, getProductById, searchProducts, updateProduct
 } from './menu.js';
+import { getAllOrders, createOrder } from './orders.js'
 
 
 export const router = express.Router();
@@ -39,7 +40,7 @@ async function menuRoute(req, res){
   const totalProducts = parseInt(await total(), 10);
   const paging = await pagingInfo(
     {
-      page, offset, count: totalProducts, listLength: menu.length, PAGE_SIZE, menu
+      page, offset, count: totalProducts, listLength: menu.length, PAGE_SIZE, items: menu
     },
   );
   if(!menu) return res.status(404).json({error: 'No menus found'});
@@ -87,11 +88,26 @@ async function deleteProductRoute(req, res){
 }
 
 async function getOrdersRoute(req, res){
+  let { page = 1 } = req.query;
+  page = setPagenumber(page);
+  const offset = (page - 1) * PAGE_SIZE;
+  const orders = await getAllOrders(PAGE_SIZE, offset);
+  const total = parseInt(await totalOrders(), 10);
+  const paging = await pagingInfo(
+    {
+      page, offset, count: total, listLength: orders.length, PAGE_SIZE, items: orders
+    },
 
+  );
+  if(!orders) return res.status(404).json({error: 'No orders found'});
+  return res.status(200).json(paging);
 }
 
 async function postOrdersRoute(req, res){
-  
+  const { id } = req.body;
+  const { name } = req.body;
+  const result = await createOrder(id, name);
+  return res.status('201').json(result);
 }
 
 async function categoriesRoute(req, res){

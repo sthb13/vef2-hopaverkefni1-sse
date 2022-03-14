@@ -50,7 +50,6 @@ export async function createProduct(title, price, description, img, categoryId){
              RETURNING id, title, price, description, img, categoryID`;
   try {
     const result = await query(q, [title, price, description, img, categoryId]);
-    // console.log('query result: ', result);
     return result.rows[0];
   } catch (e) {
     console.error('Gat ekki búið til vöru');

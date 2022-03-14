@@ -149,3 +149,15 @@ try {
 
   return 0;
 }
+
+export async function totalOrders() {
+try {
+    const result = await query(
+      'SELECT COUNT(*) AS count FROM orders');
+    return (result.rows && result.rows[0] && result.rows[0].count) || 0;
+  } catch (e) {
+    console.error('Error counting products', e);
+  }
+
+  return 0;
+}
