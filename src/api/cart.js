@@ -1,4 +1,4 @@
-import { query } from'../db.js';
+import { query } from '../db.js';
 
 export async function findCartById(id){
   const q = `SELECT p.title, p.price, b.productid, b.amount
@@ -41,7 +41,8 @@ export async function deleteCartById(id){
 }
 
 export async function addCart(id){
-  const q = `INSERT INTO baskets (id) VALUES ($1) RETURNING id`;
+  const q = `INSERT INTO baskets (id)
+            VALUES ($1) RETURNING id`;
   try{
     const result = await query (q, [id]);
     return result.rows[0];
@@ -52,8 +53,8 @@ export async function addCart(id){
 }
 
 export async function findLineInCart(cartid,id){
-  const q = `SELECT basketid AS id, amount, description 
-              FROM basketitems, products 
+  const q = `SELECT basketid AS id, amount, description
+              FROM basketitems, products
               WHERE basketid = $1 LIMIT 1 OFFSET $2`;
 
   try{

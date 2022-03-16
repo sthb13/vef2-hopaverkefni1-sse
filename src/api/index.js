@@ -14,7 +14,7 @@ import {
   createProduct, deleteProduct,
   findProducts, findProductsByCategory, getProductById, searchProducts, updateProduct
 } from './menu.js';
-import { createOrder, getAllOrders } from './orders.js';
+import { createOrder, getAllOrders, setOrderStatus } from './orders.js';
 
 
 
@@ -108,6 +108,7 @@ async function getOrdersRoute(req, res){
     },
 
   );
+
   if(!orders) return res.status(404).json({error: 'No orders found'});
   return res.status(200).json(paging);
 }
@@ -116,10 +117,11 @@ async function postOrdersRoute(req, res){
   const { name } = req.body;
   const orderID = uuidv4();
   const result = await createOrder(orderID.toString(), name);
+  const setStatus = await setOrderStatus(orderID.toString(),1);
   if(!result){
-    return res.status(500).json(result);
+    return res.status(500).json();
   }
-  return res.status(201).json(result);
+  return res.status(201).json({result , setStatus});
 }
 
 async function categoriesRoute(req, res){
