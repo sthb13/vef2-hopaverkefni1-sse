@@ -5,13 +5,17 @@ import { total, totalOrders } from '../db.js';
 import { getURLForCloudinary } from '../utils/cloudinary.js';
 import { catchErrors } from '../utils/errorsHandler.js';
 import { pagingInfo, setPagenumber } from '../utils/utils.js';
-import { addProductToCartById, deleteCartById, findCartById } from './cart.js';
+import {
+  addCart, addProductToCartById,
+  deleteCartById, findCartById, findLineInCart
+} from './cart.js';
 import { createCategory, deleteCategory, findCategories, updateCategory } from './category.js';
 import {
   createProduct, deleteProduct,
   findProducts, findProductsByCategory, getProductById, searchProducts, updateProduct
 } from './menu.js';
 import { createOrder, getAllOrders } from './orders.js';
+
 
 
 export const router = express.Router();
@@ -178,6 +182,20 @@ async function deleteCartRoute(req,res){
   return res.status(201).json(result);
 
 }
+
+async function addCartRoute(req,res){
+  const id  = uuidv4();
+
+  const result = await addCart(id);
+  return res.status(200).json(result);
+}
+
+async function getLineInCartRoute(req,res){
+  const { cartid, id } = req.params;
+  const result = await findLineInCart(cartid, id);
+  return res.status(200).json(result);
+}
+
 // TOODO : validation
 router.get('/menu', catchErrors(menuRoute));
 router.post('/menu', requireAdmin, catchErrors(addProductRoute));
@@ -193,7 +211,10 @@ router.post('/categories', requireAdmin, catchErrors(addCategoryRoute));
 router.patch('/categories/:id', requireAdmin, catchErrors(updateCategoryRoute));
 router.delete('/categories/:id', requireAdmin, catchErrors(deleteCategoryRoute));
 router.get('/cart/:cartid', catchErrors(cartRoute));
+router.get('/cart/:cartid/line/:id', catchErrors(getLineInCartRoute));
 // TODO validation
+router.post('/cart', catchErrors(addCartRoute));
 router.post('/cart/:cartid', catchErrors(addToCartRoute));
+
 // TODO virkar ekki, references to basketitems
 router.delete('/cart/:cartid', catchErrors(deleteCartRoute));

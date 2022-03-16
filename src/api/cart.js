@@ -39,3 +39,28 @@ export async function deleteCartById(id){
   return null;
 
 }
+
+export async function addCart(id){
+  const q = `INSERT INTO baskets (id) VALUES ($1) RETURNING id`;
+  try{
+    const result = await query (q, [id]);
+    return result.rows[0];
+  }catch (e) {
+    console.error('Gat ekki bætt körfu', e);
+  }
+  return null;
+}
+
+export async function findLineInCart(cartid,id){
+  const q = `SELECT basketid AS id, amount, description 
+              FROM basketitems, products 
+              WHERE basketid = $1 LIMIT 1 OFFSET $2`;
+
+  try{
+      const result = await query(q, [cartid,id]);
+      if(result.rowCount > 0) return result.rows;
+    } catch (e) {
+      console.error('Línan fannst ekki', e);
+    }
+    return null;
+}
