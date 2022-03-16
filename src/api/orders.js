@@ -21,4 +21,6 @@ export async function createOrder(id, name){
 	} catch (e) {
 		console.error('Gat ekki búið til pöntun');
 	}
+  return null;
 }
+

@@ -1,4 +1,5 @@
 import express from 'express';
+import { v4 as uuidv4 } from 'uuid';
 import { requireAdmin } from '../auth/passport.js';
 import { total, totalOrders } from '../db.js';
 import { getURLForCloudinary } from '../utils/cloudinary.js';
@@ -10,7 +11,7 @@ import {
   createProduct, deleteProduct,
   findProducts, findProductsByCategory, getProductById, searchProducts, updateProduct
 } from './menu.js';
-import { getAllOrders, createOrder } from './orders.js'
+import { createOrder, getAllOrders } from './orders.js';
 
 
 export const router = express.Router();
@@ -62,9 +63,11 @@ async function addProductRoute(req, res){
   if(!url){
     res.status(500).end();
   }
-  console.log(url);
-  console.log(img);
+
   const result = await createProduct(title, price, description, url, categoryID);
+  if (!result){
+    return res.status(500).json({error: 'mynd þarf að vera absolute path á mynd'});
+  }
   return res.status(201).json(result);
 }
 
@@ -76,9 +79,10 @@ async function patchProductRoute(req, res){
   if(!url){
     res.status(500).end();
   }
-
-
-  const result = await updateProduct(id, title, price, description, url, categoryID)
+  const result = await updateProduct(id, title, price, description, url, categoryID);
+  if (!result){
+    return res.status(500).json({error: 'mynd þarf að vera absolute path á mynd'});
+  }
   return res.status(201).json(result);
 }
 
@@ -93,10 +97,10 @@ async function getOrdersRoute(req, res){
   page = setPagenumber(page);
   const offset = (page - 1) * PAGE_SIZE;
   const orders = await getAllOrders(PAGE_SIZE, offset);
-  const total = parseInt(await totalOrders(), 10);
+  const totals = parseInt(await totalOrders(), 10);
   const paging = await pagingInfo(
     {
-      page, offset, count: total, listLength: orders.length, PAGE_SIZE, items: orders
+      page, offset, count: totals, listLength: orders.length, PAGE_SIZE, items: orders
     },
 
   );
@@ -105,10 +109,13 @@ async function getOrdersRoute(req, res){
 }
 
 async function postOrdersRoute(req, res){
-  const { id } = req.body;
   const { name } = req.body;
-  const result = await createOrder(id, name);
-  return res.status('201').json(result);
+  const orderID = uuidv4();
+  const result = await createOrder(orderID.toString(), name);
+  if(!result){
+    return res.status(500).json(result);
+  }
+  return res.status(201).json(result);
 }
 
 async function categoriesRoute(req, res){
@@ -171,7 +178,7 @@ async function deleteCartRoute(req,res){
   return res.status(201).json(result);
 
 }
-
+// TOODO : validation
 router.get('/menu', catchErrors(menuRoute));
 router.post('/menu', requireAdmin, catchErrors(addProductRoute));
 router.get('/menu/:id', catchErrors(getProductRoute));
@@ -179,7 +186,7 @@ router.patch('/menu/:id', requireAdmin, catchErrors(patchProductRoute));
 router.delete('/menu/:id', requireAdmin, catchErrors(deleteProductRoute));
 
 router.get('/orders', requireAdmin, catchErrors(getOrdersRoute));
-router.post('/orders', catchErrors(postOrdersRoute));
+router.post('/orders',catchErrors(postOrdersRoute));
 router.get('/categories', catchErrors(categoriesRoute));
 // TODO validation
 router.post('/categories', requireAdmin, catchErrors(addCategoryRoute));
