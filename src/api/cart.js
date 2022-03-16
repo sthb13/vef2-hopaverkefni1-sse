@@ -39,3 +39,14 @@ export async function deleteCartById(id){
   return null;
 
 }
+
+export async function addCart(id){
+  const q = `INSERT INTO baskets (id) VALUES ($1) RETURNING id`;
+  try{
+    const result = await query (q, [id]);
+    return result.rows[0];
+  }catch (e) {
+    console.error('Gat ekki bætt körfu', e);
+  }
+  return null;
+}
