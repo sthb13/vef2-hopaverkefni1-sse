@@ -29,3 +29,6 @@ yarn-error.log*
 temp/
 
 .vscode
+.curl-sse.org.~undo-tree~
+.#curl-sse.org
+.curl-sse.org.~undo-tree~

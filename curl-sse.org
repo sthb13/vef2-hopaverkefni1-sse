@@ -59,11 +59,26 @@
 
 #+RESULTS:
 
+
+** cart
+#+BEGIN_SRC shell :var AUTH_TOKEN_ADMIN=get-admin-token :results raw
+  curl -L -X POST "Http://localhost:3000/cart" \
+       -H "Content-Type: application/json"
+#+END_SRC
+
+#+RESULTS:
+{"id":"c8c77790-b66c-4e42-a5b4-d045b7441f16"}
+{"id":"ec24d380-44ee-4fd9-84e6-96a4bab16003"}
+null
+null
+null
+null
+
 ** cart/:cartid
 #+BEGIN_SRC shell :var AUTH_TOKEN_ADMIN=get-admin-token :results raw
   curl -L -X POST "Http://localhost:3000/cart/c75a4f3c-083d-4805-b6ce-b990d044db47" \
        -H "Content-Type: application/json" \
-       --data '{"productId": 21, "amount": 3}'
+       --data '{"productId": 20, "amount": 2}'
 #+END_SRC
 
 #+RESULTS:
@@ -156,31 +171,20 @@ null
 #+END_SRC
 
 #+RESULTS:
+{"id":"c75a4f3c-083d-4805-b6ce-b990d044db47","lines":[{"title":"Marinara","price":1590,"productid":1,"amount":1},{"title":"Margherita","price":1990,"productid":2,"amount":2},{"title":"Patate","price":2390,"productid":3,"amount":1}],"total":7960}
 {"id":"c75a4f3c-083d-4805-b6ce-b990d044db47","lines":[{"title":"Marinara","price":1590,"productid":1,"amount":2},{"title":"Margherita","price":1990,"productid":2,"amount":1},{"title":"Patate","price":2390,"productid":3,"amount":3},{"title":"Kranabjór","price":990,"productid":21,"amount":3}],"total":15310}
 {"id":"c75a4f3c-083d-4805-b6ce-b990d044db47","lines":[{"title":"Marinara","price":1590,"productid":1,"amount":2},{"title":"Margherita","price":1990,"productid":2,"amount":1},{"title":"Patate","price":2390,"productid":3,"amount":3}],"total":12340}
-{"id":"c75a4f3c-083d-4805-b6ce-b990d044db47","lines":[{"title":"Marinara","price":1590,"productid":1,"amount":2},{"title":"Margherita","price":1990,"productid":2,"amount":1},{"title":"Patate","price":2390,"productid":3,"amount":3}],"total":"[object Object]19907170"}
-{"id":"c75a4f3c-083d-4805-b6ce-b990d044db47","lines":[{"title":"Marinara","price":1590,"productid":1,"amount":2},{"title":"Margherita","price":1990,"productid":2,"amount":1},{"title":"Patate","price":2390,"productid":3,"amount":3}],"total":"[object Object]19907170"}
-{"id":"c75a4f3c-083d-4805-b6ce-b990d044db47","lines":[{"title":"Marinara","price":1590,"productid":1,"amount":2},{"title":"Margherita","price":1990,"productid":2,"amount":1},{"title":"Patate","price":2390,"productid":3,"amount":3}],"total":"[object Object]19907170"}
-[{"title":"Marinara","price":1590,"productid":1,"amount":2},{"title":"Margherita","price":1990,"productid":2,"amount":1},{"title":"Patate","price":2390,"productid":3,"amount":3}]
-[{"title":"Marinara","price":1590,"productid":1,"amount":2},{"title":"Margherita","price":1990,"productid":2,"amount":1},{"title":"Patate","price":2390,"productid":3,"amount":3}]
-[{"title":"Marinara","price":1590,"productid":1,"amount":2},{"title":"Margherita","price":1990,"productid":2,"amount":1},{"title":"Patate","price":2390,"productid":3,"amount":3}]
-[{"title":"Marinara","price":1590,"productid":1,"amount":2},{"title":"Margherita","price":1990,"productid":2,"amount":1},{"title":"Patate","price":2390,"productid":3,"amount":3}]
-[{"title":"Marinara","price":1590,"description":"Tómatsósa, óreganó, hvítlauksolía","productid":1},{"title":"Margherita","price":1990,"description":"Tómatsósa, mozzarella, basil","productid":2},{"title":"Patate","price":2390,"description":"Kartöflur, mozzarella, óreganó","productid":3}]
-null
-null
-null
-null
-null
-null
-null
-null
-null
-[{"productid":1,"basketid":"c75a4f3c-083d-4805-b6ce-b990d044db47","amount":null},{"productid":2,"basketid":"c75a4f3c-083d-4805-b6ce-b990d044db47","amount":null},{"productid":3,"basketid":"c75a4f3c-083d-4805-b6ce-b990d044db47","amount":null}]
-null
-null
-null
-null
-null
+
+** cart/:cartid/line/:id
+#+BEGIN_SRC shell :var AUTH_TOKEN_ADMIN=get-admin-token :results raw
+  curl -L -X GET "Http://localhost:3000/cart/c75a4f3c-083d-4805-b6ce-b990d044db47/line/2" \
+       -H "Content-Type: application/json"
+#+END_SRC
+
+#+RESULTS:
+[{"id":"c75a4f3c-083d-4805-b6ce-b990d044db47","amount":1,"description":"Tómatsósa, óreganó, hvítlauksolía"}]
+[{"id":3,"productid":3,"basketid":"c75a4f3c-083d-4805-b6ce-b990d044db47","amount":1}]
+[{"id":2,"productid":2,"basketid":"c75a4f3c-083d-4805-b6ce-b990d044db47","amount":2}]
 
 * patch
 ** categories/:id
