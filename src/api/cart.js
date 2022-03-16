@@ -50,3 +50,17 @@ export async function addCart(id){
   }
   return null;
 }
+
+export async function findLineInCart(cartid,id){
+  const q = `SELECT basketid AS id, amount, description 
+              FROM basketitems, products 
+              WHERE basketid = $1 LIMIT 1 OFFSET $2`;
+
+  try{
+      const result = await query(q, [cartid,id]);
+      if(result.rowCount > 0) return result.rows;
+    } catch (e) {
+      console.error('Línan fannst ekki', e);
+    }
+    return null;
+}
