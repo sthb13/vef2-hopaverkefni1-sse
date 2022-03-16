@@ -21,6 +21,7 @@ CREATE TABLE baskets (
 );
 
 CREATE TABLE basketItems (
+  id serial PRIMARY KEY,
 	productID INTEGER NOT NULL,
 	basketID VARCHAR(64) NOT NULL,
 	amount INTEGER CHECK( amount > 0),
