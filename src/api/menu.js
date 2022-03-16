@@ -91,7 +91,9 @@ export async function deleteProduct(id) {
   try {
     const result = await query(q, [id])
     // console.log(result);
+    return result
   } catch (e) {
     console.error('Gat ekki eytt vöru')
   }
+    return null;
 }
