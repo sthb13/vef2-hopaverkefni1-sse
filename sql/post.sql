@@ -47,7 +47,7 @@ INSERT INTO orders (id, name) VALUES ('97ce323b-896c-4b68-8300-33f04662e23f','te
 
 
 INSERT INTO orderStatus (orderID) VALUES ('97ce323b-896c-4b68-8300-33f04662e23f');
-INSERT INTO orderStatus (orderID) VALUES ('97ce323b-896c-4b68-8300-33f04662e23f');
+INSERT INTO orderStatus (orderID) VALUES ('53f65136-db08-498e-9b4f-b9e048483232');
 
 INSERT INTO orderItems (productID, ordersID,amount) VALUES (1,'53f65136-db08-498e-9b4f-b9e048483232',2);
 INSERT INTO orderItems (productID, ordersID,amount) VALUES (2,'53f65136-db08-498e-9b4f-b9e048483232',1);

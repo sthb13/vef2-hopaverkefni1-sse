@@ -21,7 +21,7 @@ import {
 } from './menu.js';
 import {
   createOrder, getAllOrders, getOrderByID, setOrderItems,
-  setOrderStatus
+  setOrderStatus, getOrderStatus, updateOrderStatus
 } from './orders.js';
 
 
@@ -192,6 +192,25 @@ async function getOrdersIdRoute(req,res){
   return res.status(200).json({result, sum});
 }
 
+async function getOrderStatusRoute(req, res){
+  const { id } = req.params;
+  const result = await getOrderStatus(id);
+  if(!result){
+    return res.status(500).json('Fann ekki stöðu pöntunar');
+  }
+  return res.status(200).json(result);
+}
+
+async function postOrderStatusRoute(req, res) {
+  const { id } = req.params;
+  const { status } = req.body;
+  const result = await updateOrderStatus(id, status);
+  if(!result){
+    return res.status(500).json('Fann ekki pöntun til að uppfæra');
+  }
+  return res.status(200).json(result);
+}
+
 async function categoriesRoute(req, res){
   const categories = await findCategories();
 
@@ -329,12 +348,15 @@ router.delete(
 router.get('/orders', requireAdmin, catchErrors(getOrdersRoute));
 router.post('/orders',catchErrors(postOrdersRoute));
 router.get('/orders/:id',catchErrors(getOrdersIdRoute));
+router.get('/orders/:id/status', requireAdmin, catchErrors(getOrderStatusRoute));
+router.post('/orders/:id/status', requireAdmin, catchErrors(postOrderStatusRoute));
 
 
 router.get('/categories', catchErrors(categoriesRoute));
 router.post('/categories', requireAdmin, catchErrors(addCategoryRoute));
 router.patch('/categories/:id', requireAdmin, catchErrors(updateCategoryRoute));
 router.delete('/categories/:id', requireAdmin, catchErrors(deleteCategoryRoute));
+
 
 router.get('/cart/:cartid', catchErrors(cartRoute));
 router.get('/cart/:cartid/line/:id', catchErrors(getLineInCartRoute));

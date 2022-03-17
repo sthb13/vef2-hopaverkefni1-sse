@@ -3,10 +3,12 @@ import { createSchema, dropSchema, end, insertTest } from './db.js';
 // Setja upp töflur og gögn fyrir vidburdir DB
 async function create() {
   await dropSchema();
+  console.info('Schema dropped');
   await createSchema();
-  await insertTest()
-  await end();
   console.info('Schema created');
+  await insertTest();
+  console.info('Data simulated');
+  await end();
 }
 
 create().catch((err) => {

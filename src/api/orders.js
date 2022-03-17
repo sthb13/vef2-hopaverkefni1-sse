@@ -86,3 +86,35 @@ export async function deleteOrderItemsBYProductID(id){
   return null;
 
 }
+export async function getOrderStatus(id){
+	try {
+		const result = await query(
+			`SELECT status, created
+			FROM orderStatus
+			WHERE orderID = $1`,
+			[id]);
+		if(result.rowCount > 0) {
+			return result.rows;
+		}
+	} catch (e) {
+		console.error('Staða pöntunar fannst ekki')
+	}
+  return null;
+}
+
+export async function updateOrderStatus(id, status){
+	try {
+		const result = await query(
+			`UPDATE orderStatus
+			SET status = $2
+			WHERE orderID = $1
+			RETURNING *`
+			,[id, status]);
+		if(result.rowCount > 0) {
+			return result.rows;
+		}
+	} catch (e) {
+		console.error('Gat ekki uppfært stöðu')
+	}
+  return null;
+}
