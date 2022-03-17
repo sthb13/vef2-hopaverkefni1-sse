@@ -7,7 +7,7 @@ import { catchErrors } from '../utils/errorsHandler.js';
 import { pagingInfo, setPagenumber } from '../utils/utils.js';
 import {
   addCart, addProductToCartById,
-  deleteCartById, findCartById, findLineInCart, updateLineAmount
+  deleteCartById, deleteLine, findCartById, findLineInCart, updateLineAmount
 } from './cart.js';
 import { createCategory, deleteCategory, findCategories, updateCategory } from './category.js';
 import {
@@ -207,6 +207,14 @@ async function updateLineRoute(req,res){
   return res.status(201).json(result);
 }
 
+async function deleteLineRoute(req,res){
+  const { cartid, id} = req.params;
+
+  const result = await deleteLine(cartid, id);
+
+  return res.status(200).json(result);
+}
+
 // TOODO : validation
 router.get('/menu', catchErrors(menuRoute));
 router.post('/menu', requireAdmin, catchErrors(addProductRoute));
@@ -230,3 +238,4 @@ router.post('/cart/:cartid', catchErrors(addToCartRoute));
 router.patch('/cart/:cartid/line/:id', catchErrors(updateLineRoute));
 // TODO virkar ekki, references to basketitems
 router.delete('/cart/:cartid', catchErrors(deleteCartRoute));
+router.delete('/cart/:cartid/line/:id', catchErrors(deleteLineRoute));

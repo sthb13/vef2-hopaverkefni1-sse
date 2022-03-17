@@ -81,3 +81,16 @@ export async function updateLineAmount(cartid,id,amount){
   }
   return null;
 }
+
+export async function deleteLine(cartid,id){
+  const q = `DELETE FROM basketitems
+              WHERE basketid = $1 AND id = $2`;
+  try {
+    const result = await query(q, [cartid, id])
+    // console.log(result);
+    return result
+  } catch (e) {
+    console.error('Gat ekki eytt línu')
+  }
+    return null;
+}
