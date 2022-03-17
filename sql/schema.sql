@@ -16,14 +16,14 @@ CREATE TABLE products (
 );
 
 CREATE TABLE baskets (
-	id VARCHAR(64) PRIMARY KEY,
+	id uuid PRIMARY KEY,
 	created TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE basketItems (
   id serial PRIMARY KEY,
 	productID INTEGER NOT NULL,
-	basketID VARCHAR(64) NOT NULL,
+	basketID uuid NOT NULL,
 	amount INTEGER CHECK( amount > 0),
 	CONSTRAINT productID FOREIGN KEY(productID) REFERENCES products(id),
 	CONSTRAINT basketID FOREIGN KEY(basketID) REFERENCES baskets(id)
@@ -37,15 +37,14 @@ CREATE TABLE orders (
 
 CREATE TABLE orderItems (
 	productID INTEGER NOT NULL,
-	basketID VARCHAR(32) NOT NULL,
+	ordersID uuid NOT NULL,
 	amount INTEGER CHECK( amount > 0),
 	CONSTRAINT productID FOREIGN KEY(productID) REFERENCES products(id),
-	CONSTRAINT basketID FOREIGN KEY(basketID) REFERENCES baskets(id)
+	CONSTRAINT ordersID FOREIGN KEY(ordersID) REFERENCES orders(id)
 );
 
 
 CREATE TYPE status AS ENUM ('NEW','PREPARE','COOKING','READY','FINISHED');
-
 
 CREATE TABLE orderStatus (
 	orderID uuid NOT NULL,

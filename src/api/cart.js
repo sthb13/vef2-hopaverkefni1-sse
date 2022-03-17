@@ -1,7 +1,7 @@
 import { query } from '../db.js';
 
 export async function findCartById(id){
-  const q = `SELECT p.title, p.price, b.productid, b.amount
+  const q = `SELECT p.title, p.price, b.productid, b.basketid, b.amount
              FROM products p, basketitems b
              WHERE p.id = b.productid AND b.basketid = $1`;
   try{
@@ -27,18 +27,37 @@ export async function addProductToCartById(id, productId, amount){
   return null;
 }
 
-// TODO virkar ekki, references to basketitems
-export async function deleteCartById(id){
-  const q = 'DELETE FROM baskets WHERE id = $1'
+export async function deleteBasketItems(id){
   try{
-    const result = await query (q, [id]);
-    return result.rows[0];
+    const result = await query (
+    `DELETE FROM basketitems
+    WHERE basketitems.basketid = $1;`,
+     [id]);
+     if(result.rowCount>0){
+      return true;
+     }
   } catch (e) {
     console.error('Gat ekki eytt körfu', e);
   }
   return null;
 
 }
+
+export async function deleteCartById(id){
+  const q = 'DELETE FROM baskets WHERE id = $1'
+  try{
+    const result = await query (q, [id]);
+    if(result.rowCount>0){
+      return true;
+    }
+  } catch (e) {
+    console.error('Gat ekki eytt körfu', e);
+  }
+  return null;
+
+}
+
+
 
 export async function addCart(id){
   const q = `INSERT INTO baskets (id)

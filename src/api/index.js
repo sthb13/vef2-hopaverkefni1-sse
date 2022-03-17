@@ -6,15 +6,14 @@ import { getURLForCloudinary } from '../utils/cloudinary.js';
 import { catchErrors } from '../utils/errorsHandler.js';
 import { pagingInfo, setPagenumber } from '../utils/utils.js';
 import {
-  addCart, addProductToCartById,
-  deleteCartById, findCartById, findLineInCart
+  addCart, addProductToCartById, deleteBasketItems, deleteCartById, findCartById, findLineInCart
 } from './cart.js';
 import { createCategory, deleteCategory, findCategories, updateCategory } from './category.js';
 import {
   createProduct, deleteProduct,
   findProducts, findProductsByCategory, getProductById, searchProducts, updateProduct
 } from './menu.js';
-import { createOrder, getAllOrders, setOrderStatus } from './orders.js';
+import { createOrder, getAllOrders, setOrderItems, setOrderStatus } from './orders.js';
 
 
 
@@ -108,19 +107,54 @@ async function getOrdersRoute(req, res){
     },
 
   );
-
   if(!orders) return res.status(404).json({error: 'No orders found'});
   return res.status(200).json(paging);
 }
 
 async function postOrdersRoute(req, res){
-  const { name } = req.body;
+  const { name , cart } = req.body;
   const orderID = uuidv4();
-  const result = await createOrder(orderID.toString(), name);
-  const setStatus = await setOrderStatus(orderID.toString(),1);
+  // Búa til pöntun
+  const result = await createOrder(orderID, name);
   if(!result){
-    return res.status(500).json();
+    return res.status(500).json('Ekki er hægt að búa til pöntun');
   }
+
+  // Setja status á pöntun
+  const setStatus = await setOrderStatus(orderID,1);
+
+  if(!setStatus){
+    return res.status(500).json('Ekki er hægt að setja stöðu á pöntun');
+  }
+  // finn núverandi körfu
+
+  const findCart = await findCartById(cart);
+
+  if (!findCart ){
+    return res.status(500).json('Þessi karfa er ekki til');
+  }
+
+  // færa gögn frá körfu í orderItems
+  for (const item in findCart) {
+    if(item){
+      const setItemsOnOrder =
+      // eslint-disable-next-line no-await-in-loop
+      await setOrderItems( findCart[item].productid ,orderID,findCart[item].amount);
+      if(!setItemsOnOrder){
+        console.error('Gat ekki sett körfu á pöntun');
+      }
+    }
+  }
+  // Eyða körfu
+  const deleteCartItems = await deleteBasketItems(findCart[0].basketid);
+  if(!deleteCartItems){
+    return res.status(500).json('Ekki er hægt öllum hlutum úr körfu');
+  }
+  const deleteCart = await deleteCartById(findCart[0].basketid);
+  if(!deleteCart){
+    return res.status(500).json('Ekki er hægt að eyða körfu');
+  }
+
   return res.status(201).json({result , setStatus});
 }
 
@@ -177,11 +211,23 @@ async function addToCartRoute(req,res) {
 }
 
 async function deleteCartRoute(req,res){
-  const { id } = req.params;
+  const { cartid } = req.params;
 
-  const result = await deleteCartById(id);
+  const deleteItems= await deleteBasketItems(cartid);
+  if(!deleteItems){
+    const result = await deleteCartById(cartid);
+    if(!result){
+      return res.status(500).json('Ekki er hægt að eyða körfu');
+    }
+  }
+  else{
+    const result = await deleteCartById(cartid);
+    if(!result){
+      return res.status(500).json('Ekki er hægt að eyða körfu');
+    }
+  }
 
-  return res.status(201).json(result);
+  return res.status(201).json();
 
 }
 
@@ -207,16 +253,15 @@ router.delete('/menu/:id', requireAdmin, catchErrors(deleteProductRoute));
 
 router.get('/orders', requireAdmin, catchErrors(getOrdersRoute));
 router.post('/orders',catchErrors(postOrdersRoute));
+
 router.get('/categories', catchErrors(categoriesRoute));
-// TODO validation
 router.post('/categories', requireAdmin, catchErrors(addCategoryRoute));
 router.patch('/categories/:id', requireAdmin, catchErrors(updateCategoryRoute));
 router.delete('/categories/:id', requireAdmin, catchErrors(deleteCategoryRoute));
+
 router.get('/cart/:cartid', catchErrors(cartRoute));
 router.get('/cart/:cartid/line/:id', catchErrors(getLineInCartRoute));
-// TODO validation
 router.post('/cart', catchErrors(addCartRoute));
 router.post('/cart/:cartid', catchErrors(addToCartRoute));
 
-// TODO virkar ekki, references to basketitems
 router.delete('/cart/:cartid', catchErrors(deleteCartRoute));

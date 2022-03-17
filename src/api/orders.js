@@ -40,3 +40,15 @@ export async function setOrderStatus(id){
   return null;
 }
 
+export async function setOrderItems(productID, ordersID,amount ){
+	const q = `INSERT INTO orderItems(productID, ordersID ,amount )
+              VALUES($1, $2, $3)
+			        RETURNING *`;
+	try {
+		const result = await query(q, [productID, ordersID,amount]);
+		return result.rows[0];
+	} catch (e) {
+		console.error('Gat ekki búið til pöntun');
+	}
+  return null;
+}
