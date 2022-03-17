@@ -6,7 +6,7 @@ import { getURLForCloudinary } from '../utils/cloudinary.js';
 import { catchErrors } from '../utils/errorsHandler.js';
 import { pagingInfo, setPagenumber } from '../utils/utils.js';
 import {
-  addCart, addProductToCartById, deleteBasketItems, deleteCartById, findCartById, findLineInCart
+  addCart, addProductToCartById, deleteBasketItems, deleteCartById, deleteLine, findCartById, findLineInCart, updateLineAmount
 } from './cart.js';
 import { createCategory, deleteCategory, findCategories, updateCategory } from './category.js';
 import {
@@ -257,6 +257,23 @@ async function getLineInCartRoute(req,res){
   return res.status(200).json(result);
 }
 
+async function updateLineRoute(req,res){
+  const { cartid,id } = req.params;
+  const { amount } = req.body;
+
+  const result = await updateLineAmount(cartid,id,amount);
+
+  return res.status(201).json(result);
+}
+
+async function deleteLineRoute(req,res){
+  const { cartid, id} = req.params;
+
+  const result = await deleteLine(cartid, id);
+
+  return res.status(200).json(result);
+}
+
 // TOODO : validation
 router.get('/menu', catchErrors(menuRoute));
 router.post('/menu', requireAdmin, catchErrors(addProductRoute));
@@ -279,4 +296,6 @@ router.get('/cart/:cartid/line/:id', catchErrors(getLineInCartRoute));
 router.post('/cart', catchErrors(addCartRoute));
 router.post('/cart/:cartid', catchErrors(addToCartRoute));
 
+router.patch('/cart/:cartid/line/:id', catchErrors(updateLineRoute));
 router.delete('/cart/:cartid', catchErrors(deleteCartRoute));
+router.delete('/cart/:cartid/line/:id', catchErrors(deleteLineRoute));
