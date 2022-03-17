@@ -30,6 +30,22 @@ export async function findMenuByTitle(title){
   return null;
 }
 
+export async function findMenuByID(id){
+  const q = `SELECT *
+            FROM products
+            WHERE id = $1`;
+
+  try{
+    const result = await query(q, [id]);
+    if (result.rowCount === 1) {
+      return result.rows[0];
+    }
+  } catch (e) {
+    console.error('Gat ekki vöru notanda eftir notendnafni');
+  }
+  return null;
+}
+
 export async function findProductsByCategory(limit, offset, category){
   const q = `SELECT * FROM products
             WHERE categoryid= $3

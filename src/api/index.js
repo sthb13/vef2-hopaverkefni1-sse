@@ -16,7 +16,7 @@ import {
 } from './cart.js';
 import { createCategory, deleteCategory, findCategories, updateCategory } from './category.js';
 import {
-  createProduct, deleteProduct,
+  createProduct, deleteProduct, findMenuByID, findMenuByTitle,
   findProducts, findProductsByCategory, getProductById, searchProducts, updateProduct
 } from './menu.js';
 import {
@@ -73,12 +73,12 @@ async function addProductRoute(req, res){
   //                                         Þannig img er absolute path frá því hvar myndin er.
   const url = await getURLForCloudinary(img);
   if(!url){
-    res.status(401).end('mynd þarf að vera absolute path frá eigin tölvu');
+    res.status(400).json({ error: 'Mynd þarf að vera absolute path frá eigin tölvu' });
   }
 
   const result = await createProduct(title, price, description, url, categoryID);
   if (!result){
-    return res.status(401).json({error: 'mynd þarf að vera absolute path á mynd'});
+    return res.status(401).json();
   }
   return res.status(201).json(result);
 }
@@ -87,13 +87,20 @@ async function patchProductRoute(req, res){
   const { id } = req.params;
   const { title, price, description, img, categoryID } = req.body;
 
+  const beForChanges= await findMenuByID(id);
+  if (beForChanges.title!== title){
+    const isTitleAvailable= await findMenuByTitle(title);
+    if (isTitleAvailable){
+      res.status(400).json({ error: 'Titill er nú þegar til að annari vöru' });
+    }
+  }
   const url = await getURLForCloudinary(img);
   if(!url){
-    res.status(500).end();
+    res.status(400).json({ error: 'Mynd þarf að vera absolute path frá eigin tölvu' });
   }
   const result = await updateProduct(id, title, price, description, url, categoryID);
   if (!result){
-    return res.status(500).json({error: 'mynd þarf að vera absolute path á mynd'});
+    return res.status(500).json();
   }
   return res.status(201).json(result);
 }
@@ -295,9 +302,22 @@ router.post(
   validationCheck,
   catchErrors(addProductRoute));
 
-router.get('/menu/:id', catchErrors(getProductRoute));
-router.patch('/menu/:id', requireAdmin, catchErrors(patchProductRoute));
-router.delete('/menu/:id', requireAdmin, catchErrors(deleteProductRoute));
+router.get(
+  '/menu/:id',
+  catchErrors(getProductRoute));
+
+router.patch(
+  '/menu/:id',
+  requireAdmin,
+  xssSanitizationMenu,
+  sanitizationMiddlewareMenu,
+  validationMenu,
+  catchErrors(patchProductRoute));
+
+router.delete(
+  '/menu/:id',
+   requireAdmin,
+   catchErrors(deleteProductRoute));
 
 router.get('/orders', requireAdmin, catchErrors(getOrdersRoute));
 router.post('/orders',catchErrors(postOrdersRoute));
