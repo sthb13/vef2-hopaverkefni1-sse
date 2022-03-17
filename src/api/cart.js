@@ -58,7 +58,6 @@ export async function deleteCartById(id){
 }
 
 
-
 export async function addCart(id){
   const q = `INSERT INTO baskets (id)
             VALUES ($1) RETURNING id`;

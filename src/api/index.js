@@ -13,7 +13,10 @@ import {
   createProduct, deleteProduct,
   findProducts, findProductsByCategory, getProductById, searchProducts, updateProduct
 } from './menu.js';
-import { createOrder, getAllOrders, setOrderItems, setOrderStatus } from './orders.js';
+import {
+  createOrder, getAllOrders, getOrderByID, setOrderItems,
+  setOrderStatus
+} from './orders.js';
 
 
 
@@ -158,6 +161,17 @@ async function postOrdersRoute(req, res){
   return res.status(201).json({result , setStatus});
 }
 
+async function getOrdersIdRoute(req,res){
+  const { id } = req.params;
+  const result = await getOrderByID(id);
+  if(!result){
+    return res.status(500).json('Fann ekki pöntun');
+  }
+  const sum = result.reduce((p,c) => p + c.price * c.amount, 0);
+
+  return res.status(200).json({result, sum});
+}
+
 async function categoriesRoute(req, res){
   const categories = await findCategories();
 
@@ -226,7 +240,6 @@ async function deleteCartRoute(req,res){
       return res.status(500).json('Ekki er hægt að eyða körfu');
     }
   }
-
   return res.status(201).json();
 
 }
@@ -253,6 +266,8 @@ router.delete('/menu/:id', requireAdmin, catchErrors(deleteProductRoute));
 
 router.get('/orders', requireAdmin, catchErrors(getOrdersRoute));
 router.post('/orders',catchErrors(postOrdersRoute));
+router.get('/orders/:id',catchErrors(getOrdersIdRoute));
+
 
 router.get('/categories', catchErrors(categoriesRoute));
 router.post('/categories', requireAdmin, catchErrors(addCategoryRoute));

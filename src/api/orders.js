@@ -15,6 +15,26 @@ export async function getAllOrders(limit, offset){
   return null;
 }
 
+export async function getOrderByID(id){
+
+	try{
+    const result = await query(
+    `SELECT *
+    FROM orders o, orderitems i, products p
+    WHERE o.id = $1 AND i.ordersid= $1 AND p.id=i.productid`,
+    [id]);
+
+    if(result.rowCount > 0) {
+      return result.rows;
+    }
+
+  } catch (e) {
+    console.error('Engar pöntun fanst');
+  }
+  return null;
+}
+
+
 export async function createOrder(id, name){
 	const q = `INSERT INTO orders(id, name) VALUES($1, $2)
 			   RETURNING id, created, name`;
