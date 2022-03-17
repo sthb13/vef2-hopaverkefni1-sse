@@ -43,6 +43,22 @@ export async function deleteBasketItems(id){
 
 }
 
+export async function deleteBasketItemsByProductID(id){
+  try{
+    const result = await query (
+    `DELETE FROM basketitems
+    WHERE basketitems.productid = $1;`,
+     [id]);
+     if(result.rowCount>0){
+      return true;
+     }
+  } catch (e) {
+    console.error('Gat ekki eytt körfu', e);
+  }
+  return null;
+
+}
+
 export async function deleteCartById(id){
   const q = 'DELETE FROM baskets WHERE id = $1'
   try{
@@ -74,9 +90,9 @@ export async function findLineInCart(cartid,id){
   // const q = `SELECT basketid AS id, amount, description
   //             FROM basketitems, products
   //             WHERE basketid = $1 LIMIT 1 OFFSET $2`;
-  const q = `SELECT basketid AS id, amount, description 
-            FROM basketitems b JOIN products p ON (b.productid=p.id) 
-            WHERE b.basketid = $1 AND b.id = $2;`            
+  const q = `SELECT basketid AS id, amount, description
+            FROM basketitems b JOIN products p ON (b.productid=p.id)
+            WHERE b.basketid = $1 AND b.id = $2;`
 
   try{
       const result = await query(q, [cartid,id]);
@@ -88,10 +104,10 @@ export async function findLineInCart(cartid,id){
 }
 
 export async function updateLineAmount(cartid,id,amount){
-  const q = `UPDATE basketitems 
-             SET amount = $3 
+  const q = `UPDATE basketitems
+             SET amount = $3
              WHERE basketid = $1 AND id = $2`;
-  try {  
+  try {
     const result = await query (q, [cartid, id, amount]);
     return result.rows[0];
   } catch (e) {

@@ -72,3 +72,17 @@ export async function setOrderItems(productID, ordersID,amount ){
 	}
   return null;
 }
+
+export async function deleteOrderItemsBYProductID(id){
+  const q = 'DELETE FROM orderitems WHERE productid = $1'
+  try{
+    const result = await query (q, [id]);
+    if(result.rowCount>0){
+      return true;
+    }
+  } catch (e) {
+    console.error('Gat ekki eytt körfu', e);
+  }
+  return null;
+
+}

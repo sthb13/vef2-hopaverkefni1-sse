@@ -107,8 +107,15 @@ async function patchProductRoute(req, res){
 
 async function deleteProductRoute(req, res){
   const { id } = req.params;
+  const product =await getProductById(id);
+  if(!product){
+    return res.status(404).json({ error: 'Þessi var er ekki til' });
+  }
   const result = await deleteProduct(id);
-  return res.status(200).json(result);
+  if(!result){
+    return res.status(500).json();
+  }
+  return res.status(200).json();
 }
 
 async function getOrdersRoute(req, res){

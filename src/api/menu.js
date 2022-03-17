@@ -1,4 +1,6 @@
 import { query } from '../db.js';
+import { deleteBasketItemsByProductID } from './cart.js';
+import { deleteOrderItemsBYProductID } from './orders.js';
 
 export async function findProducts(limit, offset){
   const q = `SELECT * FROM products ORDER BY created DESC
@@ -120,11 +122,20 @@ export async function updateProduct(id, title, price, description, img, category
 }
 
 export async function deleteProduct(id) {
+  const deleteBasketItems = deleteBasketItemsByProductID(id);
+  if (!deleteBasketItems){
+    console.error('Gat ekki eitt vörum úr körfu');
+  }
+  const  deleteOrderItems = deleteOrderItemsBYProductID(id)
+  if(!deleteOrderItems){
+    console.error('Gat ekki eitt vörum pöntunum');
+  }
   const q = 'DELETE FROM products WHERE id = $1';
   try {
     const result = await query(q, [id])
-    // console.log(result);
-    return result
+    if(result.rowCount>0){
+      return true;
+     }
   } catch (e) {
     console.error('Gat ekki eytt vöru')
   }
