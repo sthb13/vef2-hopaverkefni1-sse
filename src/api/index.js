@@ -5,8 +5,14 @@ import { total, totalOrders } from '../db.js';
 import { getURLForCloudinary } from '../utils/cloudinary.js';
 import { catchErrors } from '../utils/errorsHandler.js';
 import { pagingInfo, setPagenumber } from '../utils/utils.js';
+import { validationCheck } from '../validation/helpers.js';
 import {
-  addCart, addProductToCartById, deleteBasketItems, deleteCartById, deleteLine, findCartById, findLineInCart, updateLineAmount
+  menuTitleDoesNotExistValidator, sanitizationMiddlewareMenu, validationMenu,
+  xssSanitizationMenu
+} from '../validation/validators.js';
+import {
+  addCart, addProductToCartById, deleteBasketItems, deleteCartById,
+  deleteLine, findCartById, findLineInCart, updateLineAmount
 } from './cart.js';
 import { createCategory, deleteCategory, findCategories, updateCategory } from './category.js';
 import {
@@ -67,12 +73,12 @@ async function addProductRoute(req, res){
   //                                         Þannig img er absolute path frá því hvar myndin er.
   const url = await getURLForCloudinary(img);
   if(!url){
-    res.status(500).end();
+    res.status(401).end('mynd þarf að vera absolute path frá eigin tölvu');
   }
 
   const result = await createProduct(title, price, description, url, categoryID);
   if (!result){
-    return res.status(500).json({error: 'mynd þarf að vera absolute path á mynd'});
+    return res.status(401).json({error: 'mynd þarf að vera absolute path á mynd'});
   }
   return res.status(201).json(result);
 }
@@ -275,8 +281,20 @@ async function deleteLineRoute(req,res){
 }
 
 // TOODO : validation
-router.get('/menu', catchErrors(menuRoute));
-router.post('/menu', requireAdmin, catchErrors(addProductRoute));
+router.get(
+  '/menu',
+  catchErrors(menuRoute));
+
+router.post(
+  '/menu',
+  requireAdmin,
+  xssSanitizationMenu,
+  sanitizationMiddlewareMenu,
+  menuTitleDoesNotExistValidator,
+  validationMenu,
+  validationCheck,
+  catchErrors(addProductRoute));
+
 router.get('/menu/:id', catchErrors(getProductRoute));
 router.patch('/menu/:id', requireAdmin, catchErrors(patchProductRoute));
 router.delete('/menu/:id', requireAdmin, catchErrors(deleteProductRoute));

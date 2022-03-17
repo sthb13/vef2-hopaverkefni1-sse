@@ -1,23 +1,55 @@
 import { body } from 'express-validator';
 import xss from 'xss';
-import {comparePasswords, findUserByUsername} from '../api/users.js';
+import { findMenuByTitle } from '../api/menu.js';
+import { comparePasswords, findUserByUsername } from '../api/users.js';
 import { LoginError } from '../utils/errorsHandler.js';
 import { logger } from '../utils/logger.js';
 
 export const validationUsernameAndPass = [
   body('username')
-    .isLength({ min: 4,})
-    .withMessage('Notendarnafn verður að vera a.m.k 4 stafir'),
-  body('username')
+    .exists()
+    .withMessage('username is required')
+    .isLength({ min: 4})
+    .withMessage('Notendarnafn verður að vera a.m.k 4 stafir')
     .isLength({ max: 32})
     .withMessage('Notendarnafn má ekki vera lengri en 32 stafir'),
   body('password')
+    .exists()
+    .withMessage('password is required')
     .isLength({ min: 3})
-    .withMessage('Lykilorð verður að vera a.m.k 3 stafir'),
-  body('password')
+    .withMessage('Lykilorð verður að vera a.m.k 3 stafir')
     .isLength({ max: 32})
     .withMessage('Lykilorð má ekki vera lengra en 32 stafir')
 ];
+
+export const validationMenu = [
+  body('title')
+  .exists()
+  .withMessage('title is required')
+  .isString({ min: 0 })
+  .withMessage('title must be a string'),
+  body('price')
+    .exists()
+    .withMessage('price is required')
+    .isInt({ min: 1 })
+    .withMessage('price must be an integer larger than 0'),
+  body('description')
+    .exists()
+    .withMessage('description is required')
+    .isString({ min: 0 })
+    .withMessage('description must be a string'),
+  body('img')
+    .exists()
+    .withMessage('img is required')
+    .isString({ min: 0 })
+    .withMessage('img must be a string'),
+  body('categoryID')
+    .exists()
+    .withMessage('categoryID is required')
+    .isIn([1, 2, 3, 4, 5])
+    .withMessage('rating must be an integer, one of  1, 2, 3, 4, 5')
+];
+
 
 export const xssSanitizationUsername = [
   body('username').customSanitizer((v) => xss(v))
@@ -26,12 +58,29 @@ export const xssSanitizationUsername = [
 export const sanitizationMiddlewareUsername = [
   body('username').trim().escape(),
 ];
+export const xssSanitizationMenu = [
+  body('title').customSanitizer((v) => xss(v)),
+  body('description').customSanitizer((v) => xss(v))
+];
+export const sanitizationMiddlewareMenu = [
+  body('title').trim().escape(),
+  body('description').trim().escape(),
+];
 
 export const usernameDoesNotExistValidator = body('username')
   .custom(async (username) => {
     const user = await findUserByUsername(username);
     if (user) {
       return Promise.reject(new Error('username already exists'));
+    }
+    return Promise.resolve();
+ });
+
+ export const menuTitleDoesNotExistValidator = body('title')
+  .custom(async (title) => {
+    const menu = await findMenuByTitle(title);
+    if (menu) {
+      return Promise.reject(new Error('Önnur vara hefur nú þegar þetta nafn'));
     }
     return Promise.resolve();
  });
