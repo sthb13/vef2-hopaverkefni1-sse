@@ -56,30 +56,30 @@ Stjórnandi skráður í gagnagrunn:
 ## Dæmi um keyrslu
 ### Innskráning sem stjórnandi
 ```
-      AUTH_TOKEN_ADMIN=$(curl -L -X POST 'http://localhost:3000/users/login' \
-                  -H 'Content-Type: application/json' \
-                  --data '{"username": "admin", "password": "123"}' | jq -r ".token")
-      echo $AUTH_TOKEN_ADMIN;
+AUTH_TOKEN_ADMIN=$(curl -L -X POST 'http://localhost:3000/users/login' \
+            -H 'Content-Type: application/json' \
+            --data '{"username": "admin", "password": "123"}' | jq -r ".token")
+echo $AUTH_TOKEN_ADMIN;
 ```
 ### Skráning sem notandi
 ```
-  curl -L -X POST 'http://localhost:3000/users/register' \
-       -H 'Content-Type: application/json' \
-       --data '{"username": "jon@gmail.com", "password": "qwerty"}'
+curl -L -X POST 'http://localhost:3000/users/register' \
+     -H 'Content-Type: application/json' \
+     --data '{"username": "jon@gmail.com", "password": "qwerty"}'
 ```       
 ### Innskráning sem notandi
 ```
-     AUTH_TOKEN_USER=$(curl -L -X POST 'http://localhost:3000/users/login' \
-                 -H 'Content-Type: application/json' \
-                 --data '{"username": "jon@gmail.com", "password": "qwerty"}' | jq -r ".token")
-     echo $AUTH_TOKEN_USER;
+AUTH_TOKEN_USER=$(curl -L -X POST 'http://localhost:3000/users/login' \
+            -H 'Content-Type: application/json' \
+            --data '{"username": "jon@gmail.com", "password": "qwerty"}' | jq -r ".token")
+echo $AUTH_TOKEN_USER;
 ```
 ### Bæta við category/:id
 ```
 curl -X PATCH "http://localhost:3000/categories/6" \
-       -H "Authorization: Bearer $AUTH_TOKEN_ADMIN" \
-       -H "Content-Type: application/json" \
-       -d '{ "title": "Aperitivo"}'
+     -H "Authorization: Bearer $AUTH_TOKEN_ADMIN" \
+     -H "Content-Type: application/json" \
+     -d '{ "title": "Aperitivo"}'
 ```       
 
 Sjá öll dæmi í [þessu](curl-sse.org) skjali.
