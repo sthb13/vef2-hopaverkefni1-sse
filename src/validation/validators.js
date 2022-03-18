@@ -99,7 +99,7 @@ export const validationCategoryId = [
   .isLength({ max: 64})
   .withMessage('Category title can be 64 characters max'),
   body('id')
-  .exist()
+  .exists()
   .withMessage('Must specify category to patch')
   .isInt()
   .withMessage('CategoryID must be an integer')
