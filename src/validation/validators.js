@@ -50,6 +50,15 @@ export const validationMenu = [
     .withMessage('rating must be an integer, one of  1, 2, 3, 4, 5')
 ];
 
+export const validationOrderStatus = [
+  body('status')
+  .exists()
+  .withMessage('Status is required')
+  .isString()
+  .withMessage('Status must be a string')
+  .isIn(['NEW', 'PREPARE', 'COOKING','READY','FINISHED'])
+  .withMessage('Status must be a legal status')
+];
 
 export const xssSanitizationUsername = [
   body('username').customSanitizer((v) => xss(v))
@@ -65,6 +74,14 @@ export const xssSanitizationMenu = [
 export const sanitizationMiddlewareMenu = [
   body('title').trim().escape(),
   body('description').trim().escape(),
+];
+
+export const xssSanitizationOrderStatus = [
+  body('status').customSanitizer((v) => xss(v))
+];
+
+export const sanitizationMiddlewareOrderStatus = [
+  body('status').trim().escape(),
 ];
 
 export const usernameDoesNotExistValidator = body('username')

@@ -8,7 +8,8 @@ import { pagingInfo, setPagenumber } from '../utils/utils.js';
 import { validationCheck } from '../validation/helpers.js';
 import {
   menuTitleDoesNotExistValidator, sanitizationMiddlewareMenu, validationMenu,
-  xssSanitizationMenu
+  xssSanitizationMenu, xssSanitizationOrderStatus, sanitizationMiddlewareOrderStatus,
+  validationOrderStatus
 } from '../validation/validators.js';
 import {
   addCart, addProductToCartById, deleteBasketItems, deleteCartById,
@@ -349,7 +350,14 @@ router.get('/orders', requireAdmin, catchErrors(getOrdersRoute));
 router.post('/orders',catchErrors(postOrdersRoute));
 router.get('/orders/:id',catchErrors(getOrdersIdRoute));
 router.get('/orders/:id/status', requireAdmin, catchErrors(getOrderStatusRoute));
-router.post('/orders/:id/status', requireAdmin, catchErrors(postOrderStatusRoute));
+router.post(
+    '/orders/:id/status',
+    requireAdmin,
+    xssSanitizationOrderStatus,
+    sanitizationMiddlewareOrderStatus,
+    validationOrderStatus,
+    validationCheck,
+    catchErrors(postOrderStatusRoute));
 
 
 router.get('/categories', catchErrors(categoriesRoute));
