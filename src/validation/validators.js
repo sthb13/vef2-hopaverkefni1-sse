@@ -65,7 +65,7 @@ export const validationOrder = [
   .exists()
   .withMessage('Order must have a name')
   .isString()
-  .withMessage('Name of order must be a string')
+  .withMessage('Name of order must be a string'),
   body('cart')
   .exists()
   .withMessage('Order must have a cartID associated')
@@ -97,12 +97,62 @@ export const validationCategoryId = [
   .isLength({ min: 1})
   .withMessage('Category title can not be empty string')
   .isLength({ max: 64})
-  .withMessage('Category title can be 64 characters max')
+  .withMessage('Category title can be 64 characters max'),
   body('id')
   .exist()
   .withMessage('Must specify category to patch')
   .isInt()
   .withMessage('CategoryID must be an integer')
+];
+
+export const validationCart = [
+  body('id')
+  .exists()
+  .withMessage('Cart must have an id associated')
+  .isLength(32)
+  .withMessage('cartID is not of UUID length')
+  .matches(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
+  .withMessage('cartID must be a valid UUID')
+];
+
+export const validationCartItems = [
+  body('cartid')
+  .exists()
+  .withMessage('Cart must have an id associated')
+  .isLength(32)
+  .withMessage('cartID is not of UUID length')
+  .matches(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
+  .withMessage('cartID must be a valid UUID'),
+  body('productId')
+  .exists()
+  .withMessage('Product must have id to go in cart')
+  .isInt()
+  .withMessage('productId must be int'),
+  body('amount')
+  .exist()
+  .withMessage('must specify amount of product in cart')
+  .isInt({ gt: 0 })
+  .withMessage('amount must be integer greater than 0')
+];
+
+export const validationEditCart = [
+  body('cartid')
+  .exists()
+  .withMessage('Cart must have an id associated')
+  .isLength(32)
+  .withMessage('cartID is not of UUID length')
+  .matches(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
+  .withMessage('cartID must be a valid UUID'),
+  body('id')
+  .exists()
+  .withMessage('Product must have id to go in cart')
+  .isInt()
+  .withMessage('productId must be int'),
+  body('amount')
+  .exist()
+  .withMessage('must specify amount of product in cart')
+  .isInt({ gt: 0 })
+  .withMessage('amount must be integer greater than 0')
 ];
 
 export const xssSanitizationUsername = [
@@ -148,13 +198,45 @@ export const sanitizationMiddlewareCategory = [
 ];
 
 export const xssSanitizationCategoryId = [
-  body('title').customSanitizer((v) => xss(v))
-  body('id').customSanitizer((v) => xss(v))
+  body('title').customSanitizer((v) => xss(v)),
+  body('id').customSanitizer((v) => xss(v)),
 ];
 
 export const sanitizationMiddlewareCategoryId = [
-  body('title').trim().escape()
+  body('title').trim().escape(),
+  body('id').trim().escape(),
+];
+
+export const xssSanitizationCart = [
+  body('id').customSanitizer((v) => xss(v))
+];
+
+export const sanitizationMiddlewareCart = [
   body('id').trim().escape()
+];
+
+export const xssSanitizationCartItems = [
+  body('cartid').customSanitizer((v) => xss(v)),
+  body('productId').customSanitizer((v) => xss(v)),
+  body('amount').customSanitizer((v) => xss(v))
+];
+
+export const sanitizationMiddlewareCartItems = [
+  body('cartid').trim().escape(),
+  body('productId').trim().escape(),
+  body('amount').trim().escape()
+];
+
+export const xssSanitizationEditCart = [
+  body('cartid').customSanitizer((v) => xss(v)),
+  body('id').customSanitizer((v) => xss(v)),
+  body('amount').customSanitizer((v) => xss(v))
+];
+
+export const sanitizationMiddlewareEditCart = [
+  body('cartid').trim().escape(),
+  body('id').trim().escape(),
+  body('amount').trim().escape()
 ];
 
 export const usernameDoesNotExistValidator = body('username')

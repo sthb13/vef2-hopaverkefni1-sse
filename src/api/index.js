@@ -10,8 +10,11 @@ import {
   menuTitleDoesNotExistValidator, sanitizationMiddlewareMenu, validationMenu,
   xssSanitizationMenu, xssSanitizationOrderStatus, sanitizationMiddlewareOrderStatus,
   validationOrderStatus, xssSanitizationOrder, sanitizationMiddlewareOrder, validationOrder,
-  sanitizationMiddlewareCategory, xssSanitizationCategory, validationCategory, xssSanitizationCategoryId,
-  sanitizationMiddlewareCategoryId, validationCategoryId,
+  sanitizationMiddlewareCategory, xssSanitizationCategory, validationCategory,
+  xssSanitizationCategoryId, sanitizationMiddlewareCategoryId, validationCategoryId,
+  xssSanitizationCart, sanitizationMiddlewareCart, validationCart, xssSanitizationCartItems,
+  sanitizationMiddlewareCartItems, validationCartItems, xssSanitizationEditCart,
+  sanitizationMiddlewareEditCart, validationEditCart
 } from '../validation/validators.js';
 import {
   addCart, addProductToCartById, deleteBasketItems, deleteCartById,
@@ -381,7 +384,7 @@ router.patch(
   '/categories/:id',
   requireAdmin,
   xssSanitizationCategoryId,
-  sanitizationMiddlewareCategoryId
+  sanitizationMiddlewareCategoryId,
   validationCategoryId,
   validationCheck,
   catchErrors(updateCategoryRoute));
@@ -390,9 +393,26 @@ router.delete('/categories/:id', requireAdmin, catchErrors(deleteCategoryRoute))
 
 router.get('/cart/:cartid', catchErrors(cartRoute));
 router.get('/cart/:cartid/line/:id', catchErrors(getLineInCartRoute));
-router.post('/cart', catchErrors(addCartRoute));
-router.post('/cart/:cartid', catchErrors(addToCartRoute));
-
-router.patch('/cart/:cartid/line/:id', catchErrors(updateLineRoute));
+router.post(
+  '/cart',
+  xssSanitizationCart,
+  sanitizationMiddlewareCart,
+  validationCart,
+  validationCheck,
+  catchErrors(addCartRoute));
+router.post(
+  '/cart/:cartid',
+  xssSanitizationCartItems,
+  sanitizationMiddlewareCartItems,
+  validationCartItems,
+  validationCheck,
+  catchErrors(addToCartRoute));
+router.patch(
+  '/cart/:cartid/line/:id',
+  xssSanitizationEditCart,
+  sanitizationMiddlewareEditCart,
+  validationEditCart,
+  validationCheck,
+  catchErrors(updateLineRoute));
 router.delete('/cart/:cartid', catchErrors(deleteCartRoute));
 router.delete('/cart/:cartid/line/:id', catchErrors(deleteLineRoute));
