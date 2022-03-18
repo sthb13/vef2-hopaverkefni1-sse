@@ -75,6 +75,36 @@ export const validationOrder = [
   .withMessage('cartID must be a valid UUID')
 ];
 
+export const validationCategory = [
+  body('title')
+  .exists()
+  .withMessage('Category must have a title')
+  .isString()
+  .withMessage('Category title must be a string')
+  .isLength({ min: 1})
+  .withMessage('Category title can not be empty string')
+  .isLength({ max: 64})
+  .withMessage('Category title can be 64 characters max')
+
+];
+
+export const validationCategoryId = [
+  body('title')
+  .exists()
+  .withMessage('Category must have a title')
+  .isString()
+  .withMessage('Category title must be a string')
+  .isLength({ min: 1})
+  .withMessage('Category title can not be empty string')
+  .isLength({ max: 64})
+  .withMessage('Category title can be 64 characters max')
+  body('id')
+  .exist()
+  .withMessage('Must specify category to patch')
+  .isInt()
+  .withMessage('CategoryID must be an integer')
+];
+
 export const xssSanitizationUsername = [
   body('username').customSanitizer((v) => xss(v))
 ];
@@ -107,6 +137,24 @@ export const xssSanitizationOrder = [
 export const sanitizationMiddlewareOrder = [
   body('name').trim().escape(),
   body('cart').trim().escape(),
+];
+
+export const xssSanitizationCategory = [
+  body('title').customSanitizer((v) => xss(v))
+];
+
+export const sanitizationMiddlewareCategory = [
+  body('title').trim().escape()
+];
+
+export const xssSanitizationCategoryId = [
+  body('title').customSanitizer((v) => xss(v))
+  body('id').customSanitizer((v) => xss(v))
+];
+
+export const sanitizationMiddlewareCategoryId = [
+  body('title').trim().escape()
+  body('id').trim().escape()
 ];
 
 export const usernameDoesNotExistValidator = body('username')

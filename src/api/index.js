@@ -10,6 +10,8 @@ import {
   menuTitleDoesNotExistValidator, sanitizationMiddlewareMenu, validationMenu,
   xssSanitizationMenu, xssSanitizationOrderStatus, sanitizationMiddlewareOrderStatus,
   validationOrderStatus, xssSanitizationOrder, sanitizationMiddlewareOrder, validationOrder,
+  sanitizationMiddlewareCategory, xssSanitizationCategory, validationCategory, xssSanitizationCategoryId,
+  sanitizationMiddlewareCategoryId, validationCategoryId,
 } from '../validation/validators.js';
 import {
   addCart, addProductToCartById, deleteBasketItems, deleteCartById,
@@ -367,8 +369,22 @@ router.post(
 
 
 router.get('/categories', catchErrors(categoriesRoute));
-router.post('/categories', requireAdmin, catchErrors(addCategoryRoute));
-router.patch('/categories/:id', requireAdmin, catchErrors(updateCategoryRoute));
+router.post(
+  '/categories',
+  requireAdmin,
+  xssSanitizationCategory,
+  sanitizationMiddlewareCategory,
+  validationCategory,
+  validationCheck,
+  catchErrors(addCategoryRoute));
+router.patch(
+  '/categories/:id',
+  requireAdmin,
+  xssSanitizationCategoryId,
+  sanitizationMiddlewareCategoryId
+  validationCategoryId,
+  validationCheck,
+  catchErrors(updateCategoryRoute));
 router.delete('/categories/:id', requireAdmin, catchErrors(deleteCategoryRoute));
 
 
