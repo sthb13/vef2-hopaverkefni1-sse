@@ -60,6 +60,21 @@ export const validationOrderStatus = [
   .withMessage('Status must be a legal status')
 ];
 
+export const validationOrder = [
+  body('name')
+  .exists()
+  .withMessage('Order must have a name')
+  .isString()
+  .withMessage('Name of order must be a string')
+  body('cart')
+  .exists()
+  .withMessage('Order must have a cartID associated')
+  .isLength(32)
+  .withMessage('cartID is not of UUID length')
+  .matches(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
+  .withMessage('cartID must be a valid UUID')
+];
+
 export const xssSanitizationUsername = [
   body('username').customSanitizer((v) => xss(v))
 ];
@@ -82,6 +97,16 @@ export const xssSanitizationOrderStatus = [
 
 export const sanitizationMiddlewareOrderStatus = [
   body('status').trim().escape(),
+];
+
+export const xssSanitizationOrder = [
+  body('name').customSanitizer((v) => xss(v)),
+  body('cart').customSanitizer((v) => xss(v)),
+];
+
+export const sanitizationMiddlewareOrder = [
+  body('name').trim().escape(),
+  body('cart').trim().escape(),
 ];
 
 export const usernameDoesNotExistValidator = body('username')

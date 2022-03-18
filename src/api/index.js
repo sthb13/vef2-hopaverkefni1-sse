@@ -9,7 +9,7 @@ import { validationCheck } from '../validation/helpers.js';
 import {
   menuTitleDoesNotExistValidator, sanitizationMiddlewareMenu, validationMenu,
   xssSanitizationMenu, xssSanitizationOrderStatus, sanitizationMiddlewareOrderStatus,
-  validationOrderStatus
+  validationOrderStatus, xssSanitizationOrder, sanitizationMiddlewareOrder, validationOrder,
 } from '../validation/validators.js';
 import {
   addCart, addProductToCartById, deleteBasketItems, deleteCartById,
@@ -172,7 +172,7 @@ async function postOrdersRoute(req, res){
   // Eyða körfu
   const deleteCartItems = await deleteBasketItems(findCart[0].basketid);
   if(!deleteCartItems){
-    return res.status(500).json('Ekki er hægt öllum hlutum úr körfu');
+    return res.status(500).json('Tókst ekki að eyða öllum hlutum úr körfu');
   }
   const deleteCart = await deleteCartById(findCart[0].basketid);
   if(!deleteCart){
@@ -347,7 +347,13 @@ router.delete(
    catchErrors(deleteProductRoute));
 
 router.get('/orders', requireAdmin, catchErrors(getOrdersRoute));
-router.post('/orders',catchErrors(postOrdersRoute));
+router.post(
+  '/orders',
+  xssSanitizationOrder,
+  sanitizationMiddlewareOrder,
+  validationOrder,
+  validationCheck,
+  catchErrors(postOrdersRoute));
 router.get('/orders/:id',catchErrors(getOrdersIdRoute));
 router.get('/orders/:id/status', requireAdmin, catchErrors(getOrderStatusRoute));
 router.post(
