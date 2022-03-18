@@ -82,7 +82,7 @@ curl -X PATCH "http://localhost:3000/categories/6" \
      -d '{ "title": "Aperitivo"}'
 ```       
 
-Sjá öll dæmi í [þessu](curl-sse.org) skjali.
+Sjá öll dæmi í þessu [skjali](curl-sse.org).
 ## Hópmeðlimir
 
 - Eva Margrét Hrólfsdóttir ( emh33 )
