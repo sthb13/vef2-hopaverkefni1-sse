@@ -10,7 +10,7 @@ cd vef2-hopaverkefni1-sse
 npm install
 createdb vef2-sse
 # uppfæra env
-npm run setup  # býr til gagnagrunn og setur admin inn
+npm run build  # býr til gagnagrunn og setur admin inn
 npm run lint  # athugar eslint
 npm run dev # þá keyrir þetta á http://localhost:3000/
 ```
@@ -38,11 +38,12 @@ npm run test  # staðfestir virkni með testum
 - GET /menu
 - POST /menu
 - GET /menu/:id
-- PATCH /menu/:id -> krefst auðkenningar og tekur við gögnum
+- PATCH /menu/:id -> tekur við gögnum
 - DELETE /menu/:id
 - GET /categories
+- GET /orders/:id -> krefst auðkenningar
 
-ps. mikilvægt er að keyra npm run setup áður en gerð eru test.
+ps. mikilvægt er að keyra npm run build áður en gerð eru test.
 
 ---
 
