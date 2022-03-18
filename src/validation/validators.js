@@ -129,7 +129,7 @@ export const validationCartItems = [
   .isInt()
   .withMessage('productId must be int'),
   body('amount')
-  .exist()
+  .exists()
   .withMessage('must specify amount of product in cart')
   .isInt({ gt: 0 })
   .withMessage('amount must be integer greater than 0')
@@ -149,7 +149,7 @@ export const validationEditCart = [
   .isInt()
   .withMessage('productId must be int'),
   body('amount')
-  .exist()
+  .exists()
   .withMessage('must specify amount of product in cart')
   .isInt({ gt: 0 })
   .withMessage('amount must be integer greater than 0')
